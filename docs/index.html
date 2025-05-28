@@ -1,0 +1,2772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Espacio Inteligente</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #0a0e27;
+            --secondary-bg: #1a1f3a;
+            --accent-color: #00d4ff;
+            --text-primary: #ffffff;
+            --text-secondary: #b8c5d6;
+            --hover-bg: #252b4a;
+            --card-bg: #1e2347;
+            --success-color: #00ff88;
+            --warning-color: #ffaa00;
+            --danger-color: #ff4757;
+            --border-color: #30375a; 
+        }
+
+        [data-theme="light"] {
+            --primary-bg: #f8fafc;
+            --secondary-bg: #ffffff;
+            --accent-color: #3b82f6;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --hover-bg: #e2e8f0;
+            --card-bg: #ffffff;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --border-color: #cbd5e1; 
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            transition: background 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+            font-size: 16px; 
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--secondary-bg);
+            padding: 2rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            transform: translateX(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.collapsed { 
+            transform: translateX(-100%);
+        }
+        .sidebar.show { 
+            transform: translateX(0);
+        }
+
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 1.5rem;
+        }
+
+        .logo h2 {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            overflow-y: auto; 
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin: 0.25rem 0; 
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.9rem 1.5rem; 
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent; 
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+            border-left-color: var(--accent-color);
+        }
+        .nav-link.active {
+            color: var(--accent-color); 
+        }
+
+
+        .nav-link i {
+            margin-right: 1rem;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem; 
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded { 
+            margin-left: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-toggle {
+            background: var(--accent-color);
+            border: none;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: none; 
+            transition: background-color 0.2s ease;
+        }
+        .menu-toggle:hover {
+            background-color: var(--success-color);
+        }
+
+        .header-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle,
+        .lang-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle:hover,
+        .lang-toggle:hover {
+            background: var(--hover-bg);
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Home Section */
+        .hero {
+            text-align: center;
+            padding: 3rem 1rem; 
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), transparent); 
+            border-radius: 20px;
+            margin-bottom: 2.5rem; 
+            border: 1px solid var(--border-color);
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3rem); 
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--success-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2.5vw, 1.2rem); 
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button, .ai-tip-button { 
+            background: linear-gradient(45deg, var(--accent-color), var(--success-color));
+            color: white;
+            padding: 0.9rem 2.2rem; 
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.2);
+            margin-top: 1rem; 
+        }
+         .ai-tip-button .fas {
+            margin-right: 0.5em;
+        }
+
+        .cta-button:hover, .ai-tip-button:hover {
+            transform: translateY(-3px) scale(1.05); 
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 1.5rem; 
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.8rem; 
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); 
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-6px); 
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            border-color: var(--accent-color);
+        }
+
+        .card-icon {
+            font-size: 2.5rem; 
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            line-height: 1; 
+        }
+
+        .card h3 {
+            font-size: 1.3rem; 
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem; 
+            flex-grow: 1; 
+        }
+
+        /* Folders Section & Files Section (estilos compartidos para grids) */
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.3rem; 
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+         .btn .fas { 
+            margin-right: 0.3em;
+        }
+
+
+        .btn:hover {
+            background: var(--success-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--hover-bg);
+            border-color: var(--accent-color);
+        }
+
+        .folders-grid, .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 1.5rem;
+        }
+        /* Estilos para vista de lista */
+        .folders-grid.list-view, .files-grid.list-view {
+            grid-template-columns: 1fr; 
+        }
+        .folders-grid.list-view .folder-item,
+        .files-grid.list-view .file-item {
+            text-align: left;
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+        }
+        .folders-grid.list-view .folder-icon,
+        .files-grid.list-view .file-icon {
+            font-size: 1.5rem; 
+            margin-bottom: 0;
+            margin-right: 1rem;
+        }
+        .folders-grid.list-view .folder-name,
+        .files-grid.list-view .file-name {
+            flex-grow: 1;
+            margin-bottom: 0;
+        }
+        .folders-grid.list-view .folder-stats,
+        .files-grid.list-view .file-size {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+
+        .folder-item, .file-item {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color); 
+            overflow: hidden; 
+        }
+
+        .folder-item:hover, .file-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .folder-icon, .file-icon {
+            font-size: 2.8rem; 
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .folder-name, .file-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.25rem;
+        }
+        .folder-stats, .file-size {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+
+        /* Drop Zone */
+        .drop-zone {
+            border: 2px dashed var(--accent-color);
+            border-radius: 15px;
+            padding: 2.5rem; 
+            text-align: center;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            background: rgba(0, 212, 255, 0.03); 
+            cursor: pointer;
+        }
+
+        .drop-zone.dragover {
+            background: rgba(0, 212, 255, 0.08);
+            border-color: var(--success-color);
+            transform: scale(1.02);
+        }
+
+        .drop-zone i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+        .drop-zone h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .drop-zone p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Notes Section */
+        .notes-container {
+            display: grid;
+            grid-template-columns: 280px 1fr; 
+            gap: 1.5rem; 
+            height: calc(100vh - 12rem); 
+            min-height: 500px;
+        }
+
+        .notes-list {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1rem; 
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        .notes-list h3 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.1rem;
+        }
+
+        .note-item {
+            padding: 0.9rem; 
+            margin-bottom: 0.5rem;
+            background: var(--hover-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .note-item:hover {
+            background: var(--primary-bg); 
+            border-color: var(--accent-color);
+        }
+        .note-item.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        .note-item.active strong, .note-item.active div {
+            color: white !important;
+        }
+        .note-item.active .pin-note, .note-item.active .delete-note-icon {
+            color: white !important;
+        }
+
+
+        .note-editor {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .editor-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.6rem; 
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 40px; 
+        }
+         .editor-btn .fas, .editor-btn .ai-icon { 
+            margin-right: 0.3em;
+        }
+
+
+        .editor-btn:hover {
+            background: var(--hover-bg);
+            border-color: var(--accent-color);
+        }
+
+        .note-title {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0; 
+            border-bottom: 2px solid var(--border-color);
+            outline: none;
+            width: 100%;
+        }
+        .note-title:focus {
+            border-bottom-color: var(--accent-color);
+        }
+
+        .note-content {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1rem;
+            line-height: 1.7; 
+            resize: none;
+            outline: none;
+            padding: 0.5rem 0;
+            width: 100%;
+        }
+
+        /* Calendar Section */
+        .calendar-container {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem; 
+            max-width: 900px; 
+            margin: 0 auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-nav {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-nav:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .calendar-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border-color); 
+            border-radius: 10px;
+            overflow: hidden; 
+            border: 1px solid var(--border-color);
+        }
+
+        .calendar-day {
+            background: var(--card-bg);
+            padding: 0.8rem; 
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            min-height: 90px; 
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: flex-start; 
+            font-weight: 500;
+            position: relative; 
+        }
+        .calendar-day.calendar-header-day { 
+            background: var(--secondary-bg);
+            color: var(--text-secondary);
+            font-weight: bold;
+            cursor: default;
+            min-height: auto;
+            padding: 0.5rem;
+        }
+
+
+        .calendar-day:hover:not(.calendar-header-day):not(.empty) {
+            background: var(--hover-bg);
+        }
+        .calendar-day.empty {
+            background: var(--secondary-bg); 
+            cursor: default;
+        }
+
+        .calendar-day.today {
+            background: var(--accent-color);
+            color: white;
+            font-weight: bold;
+            border-radius: 4px; 
+        }
+        .calendar-day.today:hover {
+            background: var(--success-color);
+        }
+        .calendar-day.has-events .event-indicator {
+            width: 8px;
+            height: 8px;
+            background-color: var(--danger-color);
+            border-radius: 50%;
+            display: inline-block;
+            margin-top: 0.3rem;
+        }
+        .calendar-day.today.has-events .event-indicator {
+            background-color: white;
+        }
+
+
+        /* Files Section Specifics */
+        .files-header { 
+            /* ... */
+        }
+
+        .search-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: 25px;
+            outline: none;
+            min-width: 250px; 
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .search-box:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        /* Settings Section */
+        .settings-container {
+            max-width: 700px; 
+            margin: 0 auto;
+        }
+
+        .settings-group {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .settings-group h3 {
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .setting-control {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px; 
+            height: 26px; 
+            background: var(--hover-bg);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px; 
+            left: 2px; 
+            width: 20px; 
+            height: 20px; 
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(24px); 
+        }
+
+        .dropdown {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.6rem 1rem; 
+            border-radius: 8px;
+            outline: none;
+            min-width: 150px;
+        }
+        .dropdown:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); 
+            z-index: 2000;
+            animation: fadeInModal 0.3s ease-out;
+            overflow-y: auto; 
+            padding: 1rem; 
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 550px; 
+            width: 100%; 
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideInModal 0.3s ease-out;
+            border: 1px solid var(--border-color);
+        }
+        @keyframes slideInModal {
+            from { transform: translateY(-30px) scale(0.95); opacity: 0.5; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            padding: 0.5rem; 
+            line-height: 1;
+        }
+        .modal-close:hover {
+            color: var(--danger-color);
+        }
+
+        .modal-title {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-size: 1.4rem; 
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group:last-child { 
+            margin-bottom: 0;
+        }
+
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.9rem; 
+        }
+
+        .form-input, .form-textarea { 
+            width: 100%;
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.8rem; 
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+            background: var(--primary-bg); 
+        }
+        .form-input[type="date"], .form-input[type="time"] {
+            color-scheme: var(--current-theme, dark); 
+        }
+        body[data-theme="light"] .form-input[type="date"],
+        body[data-theme="light"] .form-input[type="time"] {
+            color-scheme: light;
+        }
+
+
+        /* Database Connection Status */
+        .db-status {
+            position: fixed;
+            bottom: 1.5rem; 
+            right: 1.5rem; 
+            background: var(--card-bg);
+            padding: 0.8rem 1.2rem; 
+            border-radius: 10px;
+            border-left: 4px solid var(--warning-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            z-index: 1500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .db-status.connected {
+            border-left-color: var(--success-color);
+        }
+        .db-status.connected i {
+            color: var(--success-color);
+        }
+        .db-status i {
+            color: var(--warning-color);
+        }
+
+        /* Notificaciones */
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 3000;
+            font-weight: 500;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            transform: translateX(120%); 
+            opacity: 0;
+        }
+        .notification.slide-in {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .notification.slide-out {
+            transform: translateX(120%);
+            opacity: 0;
+        }
+
+        .notification.success { background: var(--success-color); }
+        .notification.error   { background: var(--danger-color); }
+        .notification.warning { background: var(--warning-color); }
+        .notification.info    { background: var(--accent-color); }
+
+        /* Modal de Confirmación Personalizado y File Preview Modal */
+        .custom-confirm-modal .modal-content, 
+        #filePreviewModal .modal-content,
+        #tipModal .modal-content {
+            max-width: 450px; 
+        }
+        #filePreviewModal .modal-content {
+            max-width: 80vw; /* Más ancho para previsualizaciones */
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #filePreviewModal .modal-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px; /* Altura mínima para el contenido */
+        }
+        #filePreviewImage, #filePreviewVideo, #filePreviewPdf {
+            max-width: 100%;
+            max-height: 70vh; /* Limitar altura de previsualización */
+            object-fit: contain; /* Asegurar que se vea completo */
+        }
+         #filePreviewAudio {
+            width: 100%;
+        }
+        #filePreviewText {
+            background: var(--hover-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            max-height: 70vh;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: var(--text-primary);
+            width: 100%;
+        }
+
+
+        /* Responsive Design */
+        @media (max-width: 992px) { 
+            .notes-container {
+                grid-template-columns: 220px 1fr; 
+            }
+        }
+
+        @media (max-width: 768px) { 
+            .sidebar {
+                transform: translateX(-100%); 
+                box-shadow: none; 
+            }
+            .sidebar.show { 
+                transform: translateX(0);
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+                width: 250px; 
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem; 
+            }
+            .menu-toggle {
+                display: block; 
+            }
+
+            .header-title {
+                font-size: 1.5rem; 
+            }
+            .header-controls {
+                gap: 0.5rem; 
+            }
+            .theme-toggle, .lang-toggle {
+                padding: 0.6rem;
+            }
+            .lang-toggle span { display: none; } 
+
+
+            .cards-grid {
+                grid-template-columns: 1fr; 
+            }
+            .notes-container {
+                grid-template-columns: 1fr; 
+                height: auto; 
+            }
+            .notes-list {
+                max-height: 250px; 
+                margin-bottom: 1rem; 
+            }
+            .calendar-day {
+                min-height: 50px; 
+                font-size: 0.85rem;
+                padding: 0.5rem;
+            }
+            .calendar-day.calendar-header-day {
+                font-size: 0.75rem;
+                padding: 0.4rem;
+            }
+            .files-header, .toolbar {
+                flex-direction: column;
+                align-items: stretch; 
+            }
+            .search-box {
+                min-width: auto;
+                width: 100%;
+            }
+            .filter-buttons {
+                justify-content: center; 
+            }
+            .settings-container {
+                padding: 0 0.5rem; 
+            }
+            .settings-group {
+                padding: 1.5rem;
+            }
+            .modal-content {
+                margin: 1rem; 
+                padding: 1.5rem;
+            }
+            #filePreviewModal .modal-content {
+                max-width: 90vw;
+                max-height: 85vh;
+            }
+            .db-status {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.6rem 1rem;
+            }
+            .notification {
+                top: 1rem;
+                right: 1rem;
+                left: 1rem; 
+                text-align: center;
+            }
+        }
+
+        /* Animaciones Adicionales */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.98); }
+        }
+
+        .loading-indicator { 
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        /* Loading Overlay for Gemini API */
+        .loading-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9998; /* Below modals but above most content */
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        .loading-overlay.active {
+            display: flex;
+        }
+        .loading-overlay .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            width: 50px;
+            height: 50px;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">
+                <h2><i class="fas fa-brain"></i> Mi Espacio IA</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-section="home">
+                        <i class="fas fa-home"></i>
+                        <span data-translate="nav.home">Inicio</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="folders">
+                        <i class="fas fa-folder"></i>
+                        <span data-translate="nav.folders">Mis Carpetas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="notes">
+                        <i class="fas fa-sticky-note"></i>
+                        <span data-translate="nav.notes">Bloc de Notas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="calendar">
+                        <i class="fas fa-calendar"></i>
+                        <span data-translate="nav.calendar">Calendario</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="files">
+                        <i class="fas fa-file"></i>
+                        <span data-translate="nav.files">Archivos Subidos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="settings">
+                        <i class="fas fa-cog"></i>
+                        <span data-translate="nav.settings">Configuración</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <main class="main-content" id="mainContent">
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="header-title" data-translate="header.title">Mi Espacio Inteligente</h1>
+                </div>
+                <div class="header-controls">
+                    <button class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="lang-toggle" id="langToggle">
+                        <i class="fas fa-globe"></i> ES
+                    </button>
+                </div>
+            </header>
+            <section class="content-section active" id="home">
+                <div class="hero">
+                    <h1 data-translate="home.title">Bienvenido a tu Espacio Inteligente</h1>
+                    <p data-translate="home.subtitle">Donde la inteligencia artificial se encuentra con tu productividad personal</p>
+                    <button class="cta-button" onclick="showSection('folders')" data-translate="home.cta">
+                        Comenzar Ahora
+                    </button>
+                    <button class="ai-tip-button" id="dailyTipBtn">
+                        <i class="fas fa-lightbulb"></i> <span data-translate="home.aiTip">Consejo del Día</span>
+                    </button>
+                </div>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <h3 data-translate="home.cards.folders.title">Gestión de Carpetas</h3>
+                        <p data-translate="home.cards.folders.desc">Organiza tus archivos de manera inteligente con carpetas personalizadas y clasificación automática.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <h3 data-translate="home.cards.notes.title">Notas Inteligentes</h3>
+                        <p data-translate="home.cards.notes.desc">Crea, edita y organiza tus ideas con un editor enriquecido y sugerencias de IA.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3 data-translate="home.cards.calendar.title">Calendario Personal</h3>
+                        <p data-translate="home.cards.calendar.desc">Planifica tu día con recordatorios inteligentes y gestión avanzada de eventos.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3 data-translate="home.cards.ai.title">Asistente IA</h3>
+                        <p data-translate="home.cards.ai.desc">Tu compañero inteligente para responder preguntas y sugerir mejoras en tu flujo de trabajo.</p>
+                    </div>
+                </div>
+            </section>
+            <section class="content-section" id="folders">
+                <div class="toolbar">
+                    <button class="btn" onclick="createFolder()">
+                        <i class="fas fa-plus"></i>
+                        <span data-translate="folders.create">Nueva Carpeta</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="uploadFile()">
+                        <i class="fas fa-upload"></i>
+                        <span data-translate="folders.upload">Subir Archivo</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleView()">
+                        <i class="fas fa-th" id="viewIcon"></i>
+                        <span data-translate="folders.view">Vista</span>
+                    </button>
+                </div>
+                <div class="drop-zone" id="dropZone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3 data-translate="folders.dropzone.title">Arrastra y suelta tus archivos aquí</h3>
+                    <p data-translate="folders.dropzone.desc">O haz clic para seleccionar archivos</p>
+                </div>
+                <div class="folders-grid" id="foldersGrid">
+                    </div>
+            </section>
+            <section class="content-section" id="notes">
+                <div class="toolbar">
+                    <button class="btn" onclick="createNote()">
+                        <i class="fas fa-plus"></i>
+                        <span data-translate="notes.create">Nueva Nota</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="saveNote()">
+                        <i class="fas fa-save"></i>
+                        <span data-translate="notes.save">Guardar</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="deleteNote()">
+                        <i class="fas fa-trash"></i>
+                        <span data-translate="notes.delete">Eliminar</span>
+                    </button>
+                </div>
+                <div class="notes-container">
+                    <div class="notes-list">
+                        <h3 data-translate="notes.list.title">Mis Notas</h3>
+                        <div id="notesList">
+                            </div>
+                    </div>
+                    <div class="note-editor">
+                        <div class="editor-toolbar">
+                            <button class="editor-btn" onclick="formatText('bold')">
+                                <i class="fas fa-bold"></i>
+                            </button>
+                            <button class="editor-btn" onclick="formatText('italic')">
+                                <i class="fas fa-italic"></i>
+                            </button>
+                            <button class="editor-btn" onclick="formatText('underline')">
+                                <i class="fas fa-underline"></i>
+                            </button>
+                            <button class="editor-btn" onclick="insertList()">
+                                <i class="fas fa-list"></i>
+                            </button>
+                            <button class="editor-btn" id="summarizeNoteBtn" title="Resumir Nota con IA">
+                                <i class="fas fa-star ai-icon"></i> Resumir
+                            </button>
+                            <button class="editor-btn" id="continueWritingBtn" title="Continuar Escritura con IA">
+                                <i class="fas fa-pen-fancy ai-icon"></i> Continuar
+                            </button>
+                        </div>
+                        <input type="text" class="note-title" id="noteTitle" placeholder="Título de la nota..." data-translate="notes.title.placeholder">
+                        <textarea class="note-content" id="noteContent" placeholder="Escribe tu nota aquí..." data-translate="notes.content.placeholder"></textarea>
+                    </div>
+                </div>
+            </section>
+            <section class="content-section" id="calendar">
+                <div class="toolbar">
+                    <button class="btn" onclick="addEvent()">
+                        <i class="fas fa-plus"></i>
+                        <span data-translate="calendar.addEvent">Nuevo Evento</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="todayView()">
+                        <i class="fas fa-calendar-day"></i>
+                        <span data-translate="calendar.today">Hoy</span>
+                    </button>
+                </div>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="calendar-nav" onclick="previousMonth()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h2 class="calendar-title" id="calendarTitle">Enero 2024</h2>
+                        <button class="calendar-nav" onclick="nextMonth()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid">
+                        </div>
+                </div>
+            </section>
+            <section class="content-section" id="files">
+                <div class="files-header">
+                    <input type="text" class="search-box" placeholder="Buscar archivos..." data-translate="files.search.placeholder" id="fileSearch">
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all" data-translate="files.filter.all">Todos</button>
+                        <button class="filter-btn" data-filter="image" data-translate="files.filter.images">Imágenes</button>
+                        <button class="filter-btn" data-filter="document" data-translate="files.filter.documents">Documentos</button>
+                        <button class="filter-btn" data-filter="video" data-translate="files.filter.videos">Videos</button>
+                        <button class="filter-btn" data-filter="audio" data-translate="files.filter.audio">Audio</button>
+                    </div>
+                </div>
+                <div class="files-grid" id="filesGrid">
+                    </div>
+            </section>
+            <section class="content-section" id="settings">
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <h3 data-translate="settings.appearance.title">Apariencia</h3>
+                        <div class="setting-item">
+                            <span class="setting-label" data-translate="settings.appearance.theme">Modo Oscuro</span>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" id="darkModeToggle">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label" data-translate="settings.appearance.font">Tamaño de Fuente</span>
+                            <div class="setting-control">
+                                <select class="dropdown" id="fontSizeSelect">
+                                    <option value="small">Pequeño</option>
+                                    <option value="medium" selected>Mediano</option>
+                                    <option value="large">Grande</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <h3 data-translate="settings.language.title">Idioma</h3>
+                        <div class="setting-item">
+                            <span class="setting-label" data-translate="settings.language.select">Idioma de la Interfaz</span>
+                            <div class="setting-control">
+                                <select class="dropdown" id="languageSelect">
+                                    <option value="es">Español</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <h3 data-translate="settings.ai.title">Configuración de IA</h3>
+                        <div class="setting-item">
+                            <span class="setting-label" data-translate="settings.ai.suggestions">Sugerencias Automáticas</span>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" id="aiSuggestionsToggle">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label" data-translate="settings.ai.voice">Reconocimiento de Voz</span>
+                            <div class="setting-control">
+                                <div class="toggle-switch" id="voiceToggle">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <h3 data-translate="settings.database.title">Configuración de Base de Datos</h3>
+                        <div class="setting-item">
+                            <span class="setting-label" data-translate="settings.database.status">Estado de Conexión</span>
+                            <div class="setting-control">
+                                <span id="dbConnectionStatus" class="badge" style="color: var(--warning-color);">
+                                    <i class="fas fa-exclamation-triangle"></i> Pendiente de Configuración
+                                </span>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label" data-translate="settings.database.config">Configurar Conexión</span>
+                            <div class="setting-control">
+                                <button class="btn btn-secondary" onclick="showDatabaseConfig()">
+                                    <i class="fas fa-database"></i> Configurar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <div class="modal" id="folderModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('folderModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="modal-title" data-translate="modal.folder.title">Nueva Carpeta</h3>
+            <div class="form-group">
+                <label class="form-label" data-translate="modal.folder.name">Nombre de la carpeta:</label>
+                <input type="text" class="form-input" id="folderNameInput" placeholder="Mi nueva carpeta">
+            </div>
+            <div class="form-group">
+                <button class="btn" onclick="confirmCreateFolder()">
+                    <i class="fas fa-check"></i>
+                    <span data-translate="modal.folder.create">Crear Carpeta</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('eventModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="modal-title" data-translate="modal.event.title">Nuevo Evento</h3>
+            <div class="form-group">
+                <label class="form-label" data-translate="modal.event.name">Título del evento:</label>
+                <input type="text" class="form-input" id="eventTitleInput" placeholder="Mi evento">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="eventDescriptionInput">Descripción:</label>
+                <textarea id="eventDescriptionInput" class="form-textarea" placeholder="Describe tu evento..."></textarea>
+            </div>
+            <div class="form-group">
+                 <button class="btn btn-secondary" id="suggestEventDetailsBtn" style="width:100%; margin-bottom: 1rem;">
+                    <i class="fas fa-lightbulb"></i> ✨ Sugerir Descripción
+                </button>
+            </div>
+            <div class="form-group">
+                <label class="form-label" data-translate="modal.event.date">Fecha:</label>
+                <input type="date" class="form-input" id="eventDateInput">
+            </div>
+            <div class="form-group">
+                <label class="form-label" data-translate="modal.event.time">Hora:</label>
+                <input type="time" class="form-input" id="eventTimeInput">
+            </div>
+            <div class="form-group">
+                <button class="btn" onclick="confirmAddEvent()">
+                    <i class="fas fa-check"></i>
+                    <span data-translate="modal.event.create">Crear Evento</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="databaseModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('databaseModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="modal-title" data-translate="modal.database.title">Configuración de Base de Datos</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" data-translate="modal.database.desc">
+                Para conectar tu base de datos Supabase, necesitas añadir tu URL de Supabase y tu Clave Anónima (Anon Key)
+                directamente en las constantes `SUPABASE_URL` y `SUPABASE_ANON_KEY` al inicio del bloque de código JavaScript.
+            </p>
+             <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Ejemplo:
+                <br>
+                <code>const SUPABASE_URL = 'https://tu-proyecto-id.supabase.co';</code>
+                <br>
+                <code>const SUPABASE_ANON_KEY = 'tu-clave-anon';</code>
+            </p>
+            <div class="form-group">
+                <button class="btn" onclick="closeModal('databaseModal')">
+                    <i class="fas fa-check"></i>
+                    <span data-translate="modal.database.connect">Entendido</span>
+                </button>
+            </div>
+        </div>
+    </div>
+     <div class="modal" id="tipModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('tipModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="modal-title" id="tipModalTitle">✨ Consejo del Día</h3>
+            <p id="tipModalContent" style="color: var(--text-secondary); line-height: 1.6;">Cargando consejo...</p>
+        </div>
+    </div>
+    <div class="modal" id="filePreviewModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('filePreviewModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="modal-title" id="filePreviewTitle">Vista Previa de Archivo</h3>
+            <div class="modal-body" id="filePreviewBody" style="text-align: center;">
+                <img id="filePreviewImage" src="#" alt="Previsualización de Imagen" style="display:none; max-width:100%; max-height: 70vh; object-fit: contain; margin: auto;">
+                <video id="filePreviewVideo" src="#" style="display:none; max-width:100%; max-height: 70vh; margin: auto;" controls></video>
+                <audio id="filePreviewAudio" src="#" style="display:none; width:100%; margin-top: 1rem;" controls></audio>
+                <pre id="filePreviewText" style="display:none; white-space:pre-wrap; word-wrap:break-word; max-height: 70vh; overflow-y:auto; background: var(--hover-bg); padding: 1rem; border-radius: 8px; text-align: left;"></pre>
+                <p id="filePreviewFallback" style="display:none; padding: 1rem; color: var(--text-secondary);"></p>
+            </div>
+            <div class="form-group" style="margin-top: 1.5rem; text-align: right;">
+                <a href="#" id="fileDownloadLink" class="btn btn-secondary" download>
+                    <i class="fas fa-download"></i> Descargar
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="db-status" id="dbStatus">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-database"></i>
+            <span data-translate="db.status.pending">Base de Datos: Pendiente</span>
+        </div>
+    </div>
+    <input type="file" id="fileInput" multiple style="display: none;">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // --- Configuración de Supabase ---
+        const SUPABASE_URL = 'https://kuzctbrowwnrwvpvqnky.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1emN0YnJvd3ducnd2cHZxbmt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyNzAxMDYsImV4cCI6MjA2Mzg0NjEwNn0.52DbeVnoMpGf1OsagJAsgNjje4oC4N2vunBE41uELpw';
+        // --- Fin de Configuración de Supabase ---
+
+        let supabase = null;
+
+        // Variables Globales
+        let currentSection = 'home';
+        let currentTheme = 'dark';
+        let currentLanguage = 'es';
+        let folders = [];
+        let notes = [];
+        let files = []; // Array para almacenar objetos de archivo (metadata y el objeto File si está en sesión)
+        let events = [];
+        let currentDate = new Date();
+        let currentNoteId = null;
+
+        // --- Gemini API Helper ---
+        const GeminiAPIHelper = {
+            apiKey: "", 
+            apiUrl: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`,
+
+            showLoading: function() {
+                console.log("GeminiAPI: Mostrando carga...");
+                document.getElementById('loadingOverlay').classList.add('active');
+            },
+
+            hideLoading: function() {
+                console.log("GeminiAPI: Ocultando carga.");
+                document.getElementById('loadingOverlay').classList.remove('active');
+            },
+
+            generateText: async function(prompt) {
+                console.log("GeminiAPI: generateText llamado con prompt:", prompt);
+                this.showLoading();
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                console.log("GeminiAPI: Payload:", JSON.stringify(payload));
+                
+                try {
+                    console.log("GeminiAPI: Realizando fetch a:", `${this.apiUrl}?key=TU_API_KEY_AQUI_SI_PRUEBAS_LOCALMENTE`); 
+                    const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    console.log("GeminiAPI: Respuesta recibida, status:", response.status);
+
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        console.error('GeminiAPI: Error en la respuesta de la API:', response.status, response.statusText, errorBody);
+                        throw new Error(`Error de la API de Gemini: ${response.status} ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    console.log("GeminiAPI: Resultado JSON:", result);
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        this.hideLoading();
+                        const generatedText = result.candidates[0].content.parts[0].text;
+                        console.log("GeminiAPI: Texto generado:", generatedText);
+                        return generatedText;
+                    } else {
+                        console.error('GeminiAPI: Respuesta inesperada de la API:', result);
+                        if (result.promptFeedback && result.promptFeedback.blockReason) {
+                            throw new Error(`Contenido bloqueado por la API: ${result.promptFeedback.blockReason}`);
+                        }
+                        throw new Error('Respuesta inesperada o vacía de la API de Gemini.');
+                    }
+                } catch (error) {
+                    this.hideLoading();
+                    console.error('GeminiAPI: Error al llamar a la API:', error);
+                    showNotification(`Error de IA: ${error.message}`, 'error');
+                    return null;
+                }
+            }
+        };
+        // --- Fin de Gemini API Helper ---
+
+
+        const DatabaseManager = {
+            isConnected: false,
+            config: { 
+                tables: {
+                    folders: 'folders',
+                    notes: 'notes',
+                    files: 'files',
+                    events: 'events',
+                }
+            },
+
+            async connect() {
+                if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+                    const errorMessage = 'Supabase URL o Anon Key no configuradas.';
+                    console.error(errorMessage);
+                    updateDbStatus(false, errorMessage);
+                    return false;
+                }
+                try {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    console.log('Cliente de Supabase inicializado.');
+                    this.isConnected = true;
+                    updateDbStatus(true, 'Conectado a Supabase');
+                    return true;
+                } catch (error) {
+                    console.error('Error al conectar con Supabase:', error);
+                    this.isConnected = false;
+                    updateDbStatus(false, `Error de conexión: ${error.message}`);
+                    return false;
+                }
+            },
+
+            async create(table, dataToInsert) {
+                if (!this.isConnected || !supabase) {
+                    showNotification('No hay conexión a la base de datos.', 'error');
+                    return null;
+                }
+                const { id, ...payload } = dataToInsert;
+
+                if (payload.created && payload.created instanceof Date) {
+                    payload.created_at = payload.created.toISOString();
+                    delete payload.created;
+                } else if (!payload.created_at) {
+                     payload.created_at = new Date().toISOString();
+                }
+
+                if (payload.updated && payload.updated instanceof Date) {
+                    payload.updated_at = payload.updated.toISOString();
+                    delete payload.updated;
+                } else if (!payload.updated_at && (table === 'notes' || table === 'events')) { 
+                    payload.updated_at = payload.created_at;
+                }
+
+                 if (payload.uploaded && payload.uploaded instanceof Date) {
+                    payload.uploaded_at = payload.uploaded.toISOString();
+                    delete payload.uploaded;
+                }
+
+                const { data, error } = await supabase.from(this.config.tables[table]).insert([payload]).select();
+                if (error) {
+                    console.error(`Error creando en ${table}:`, error);
+                    showNotification(`Error al crear en ${table}: ${error.message}`, 'error');
+                    return null;
+                }
+                console.log(`Datos creados en ${table}:`, data);
+                return data && data.length > 0 ? data[0] : null;
+            },
+
+            async read(table) {
+                if (!this.isConnected || !supabase) return [];
+                const { data, error } = await supabase.from(this.config.tables[table]).select('*');
+                if (error) {
+                    console.error(`Error leyendo de ${table}:`, error);
+                    showNotification(`Error al leer de ${table}: ${error.message}`, 'error');
+                    return [];
+                }
+                return data || [];
+            },
+
+            async update(table, id, dataToUpdate) {
+                if (!this.isConnected || !supabase) {
+                     showNotification('No hay conexión a la base de datos.', 'error');
+                     return null;
+                }
+                const { id: recordId, ...updatePayload } = dataToUpdate;
+
+                if (updatePayload.updated && updatePayload.updated instanceof Date) {
+                    updatePayload.updated_at = updatePayload.updated.toISOString();
+                    delete updatePayload.updated;
+                } else if (!updatePayload.updated_at) {
+                    updatePayload.updated_at = new Date().toISOString();
+                }
+                if (updatePayload.created_at) delete updatePayload.created_at;
+                if (updatePayload.created) delete updatePayload.created;
+
+                const { data, error } = await supabase
+                    .from(this.config.tables[table])
+                    .update(updatePayload)
+                    .eq('id', id)
+                    .select();
+                if (error) {
+                    console.error(`Error actualizando ID ${id} en ${table}:`, error);
+                    showNotification(`Error al actualizar en ${table}: ${error.message}`, 'error');
+                    return null;
+                }
+                console.log(`Datos actualizados en ${table} (ID: ${id}):`, data);
+                return data && data.length > 0 ? data[0] : null;
+            },
+
+            async delete(table, id) {
+                if (!this.isConnected || !supabase) {
+                    showNotification('No hay conexión a la base de datos.', 'error');
+                    return false;
+                }
+                const { error } = await supabase.from(this.config.tables[table]).delete().eq('id', id);
+                if (error) {
+                    console.error(`Error eliminando ID ${id} de ${table}:`, error);
+                    showNotification(`Error al eliminar de ${table}: ${error.message}`, 'error');
+                    return false;
+                }
+                console.log(`ID ${id} eliminado de ${table}`);
+                return true;
+            }
+        };
+        function updateDbStatus(connected, message) {
+            const dbStatusDiv = document.getElementById('dbStatus');
+            const dbConnectionStatusSpan = document.getElementById('dbConnectionStatus');
+
+            if (connected) {
+                dbStatusDiv.classList.add('connected');
+                dbStatusDiv.innerHTML = `<div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-database"></i><span>Conectado a Supabase</span></div>`;
+                if (dbConnectionStatusSpan) {
+                    dbConnectionStatusSpan.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success-color);"></i> Conectado`;
+                    dbConnectionStatusSpan.style.color = 'var(--success-color)';
+                }
+            } else {
+                dbStatusDiv.classList.remove('connected');
+                dbStatusDiv.innerHTML = `<div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-database"></i><span>${message || 'Desconectado'}</span></div>`;
+                if (dbConnectionStatusSpan) {
+                    dbConnectionStatusSpan.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning-color);"></i> ${message || 'Desconectado'}`;
+                    dbConnectionStatusSpan.style.color = 'var(--warning-color)';
+                }
+            }
+        }
+
+
+        async function initializeApp() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const savedLanguage = localStorage.getItem('language') || 'es';
+
+            setTheme(savedTheme);
+            setLanguage(savedLanguage);
+
+            const connected = await DatabaseManager.connect();
+            if (connected) {
+                await loadDataFromSupabase();
+            } else {
+                showNotification('No se pudo conectar a Supabase. Usando datos de muestra.', 'warning');
+                loadSampleData();
+                renderAllSections();
+            }
+
+            updateDateTime();
+            setupEventListeners();
+            showSection(localStorage.getItem('lastSection') || 'home');
+        }
+
+        async function loadDataFromSupabase() {
+            showNotification('Cargando datos desde Supabase...', 'info');
+            try {
+                folders = (await DatabaseManager.read('folders')).map(f => ({...f, id: f.id, name: f.name, created: new Date(f.created_at)})) || [];
+                
+                const notesData = await DatabaseManager.read('notes') || [];
+                notes = notesData.map(n => ({
+                    ...n,
+                    id: n.id,
+                    created: new Date(n.created_at),
+                    updated: new Date(n.updated_at)
+                })).sort((a,b) => new Date(b.updated) - new Date(a.updated))
+                   .sort((a,b) => (b.pinned ? 1 : 0) - (a.pinned ? 1: 0));
+
+                if (notes.length > 0 && !currentNoteId) {
+                     currentNoteId = notes[0].id;
+                }
+
+                const filesData = await DatabaseManager.read('files') || [];
+                files = filesData.map(f => ({...f, id: f.id, file_name: f.file_name, uploaded: new Date(f.uploaded_at)})) || [];
+
+
+                const eventsData = await DatabaseManager.read('events') || [];
+                events = eventsData.map(e => {
+                    const eventDateString = e.date && typeof e.date === 'string' ? e.date.split('T')[0] : new Date().toISOString().split('T')[0];
+                    if (!(e.date && typeof e.date === 'string')) {
+                        console.warn(`Evento con ID ${e.id} tiene fecha faltante o inválida ('${e.date}'). Usando fecha actual por defecto.`);
+                    }
+                    return {...e, id: e.id, created: new Date(e.created_at), date: eventDateString, description: e.description || '' };
+                }) || [];
+
+                console.log('Datos cargados desde Supabase.');
+                showNotification('Datos cargados exitosamente.', 'success');
+            } catch (error) {
+                console.error('Error al cargar datos desde Supabase:', error);
+                showNotification('Error al cargar datos. Usando datos de muestra.', 'warning');
+                loadSampleData();
+            }
+            renderAllSections();
+        }
+
+        function renderAllSections() {
+            renderFolders();
+            renderNotes();
+            if (currentNoteId) selectNote(currentNoteId); else if (notes.length > 0) { currentNoteId = notes[0].id; selectNote(currentNoteId); }
+            generateCalendar();
+            renderFiles();
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('langToggle').addEventListener('click', toggleLanguage);
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = link.getAttribute('data-section');
+                    showSection(section);
+                });
+            });
+
+            document.getElementById('darkModeToggle').addEventListener('click', function() {
+                this.classList.toggle('active', currentTheme === 'dark'); 
+            });
+            document.getElementById('fontSizeSelect').addEventListener('change', changeFontSize);
+            document.getElementById('languageSelect').addEventListener('change', changeLanguage);
+
+            document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+            const dropZone = document.getElementById('dropZone');
+            dropZone.addEventListener('click', () => document.getElementById('fileInput').click());
+            dropZone.addEventListener('dragover', handleDragOver);
+            dropZone.addEventListener('dragleave', handleDragLeave);
+            dropZone.addEventListener('drop', handleDrop);
+
+            document.getElementById('fileSearch').addEventListener('input', searchFiles);
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const filter = e.target.getAttribute('data-filter');
+                    filterFiles(filter);
+                });
+            });
+
+            document.getElementById('noteContent').addEventListener('input', autoSaveNote);
+            document.getElementById('noteTitle').addEventListener('input', autoSaveNote);
+
+            document.getElementById('summarizeNoteBtn').addEventListener('click', summarizeNoteWithGemini);
+            document.getElementById('continueWritingBtn').addEventListener('click', continueWritingWithGemini);
+            document.getElementById('suggestEventDetailsBtn').addEventListener('click', suggestEventDetailsWithGemini);
+            document.getElementById('dailyTipBtn').addEventListener('click', getDailyTipWithGemini);
+        }
+
+        async function summarizeNoteWithGemini() {
+            console.log("Intentando resumir nota...");
+            if (!currentNoteId) {
+                showNotification('Por favor, selecciona una nota para resumir.', 'warning');
+                console.log("Resumir: No hay nota seleccionada.");
+                return;
+            }
+            const note = notes.find(n => n.id === currentNoteId);
+            if (!note || !note.content || !note.content.trim()) {
+                showNotification('La nota está vacía o no ha sido seleccionada correctamente.', 'warning');
+                console.log("Resumir: Nota vacía o no encontrada. Nota:", note);
+                return;
+            }
+            console.log("Resumir: Nota a resumir:", note.title, "Contenido:", note.content.substring(0,100) + "...");
+
+            const prompt = `Resume el siguiente texto en español de forma concisa y clara, manteniendo las ideas principales:\n\n"${note.content}"\n\nResumen:`;
+            console.log("Resumir: Prompt para Gemini:", prompt);
+            const summary = await GeminiAPIHelper.generateText(prompt);
+            console.log("Resumir: Respuesta de Gemini (resumen):", summary);
+
+
+            if (summary) {
+                const summaryTitle = `Resumen de: ${note.title}`;
+                const newNoteData = {
+                    title: summaryTitle,
+                    content: summary,
+                    pinned: false,
+                };
+                console.log("Resumir: Creando nueva nota con resumen:", newNoteData);
+                const createdSummaryNote = await DatabaseManager.create('notes', newNoteData);
+                if (createdSummaryNote) {
+                    console.log("Resumir: Nota de resumen creada en DB:", createdSummaryNote);
+                    const fullSummaryNote = {...createdSummaryNote, id: createdSummaryNote.id, created: new Date(createdSummaryNote.created_at), updated: new Date(createdSummaryNote.updated_at) };
+                    notes.unshift(fullSummaryNote); 
+                    currentNoteId = fullSummaryNote.id; 
+                    renderNotes();
+                    selectNote(fullSummaryNote.id);
+                    showNotification('Resumen generado y guardado como nueva nota.', 'success');
+                } else {
+                    console.error("Resumir: Falló la creación de la nota de resumen en la DB.");
+                }
+            } else {
+                 console.log("Resumir: Gemini no devolvió un resumen.");
+            }
+        }
+
+        async function continueWritingWithGemini() {
+            console.log("Intentando continuar escritura...");
+            if (!currentNoteId) {
+                showNotification('Por favor, selecciona una nota para continuar.', 'warning');
+                 console.log("Continuar: No hay nota seleccionada.");
+                return;
+            }
+            const note = notes.find(n => n.id === currentNoteId);
+            if (!note) {
+                showNotification('La nota no ha sido seleccionada correctamente.', 'warning');
+                console.log("Continuar: Nota no encontrada.");
+                return;
+            }
+            const currentContent = document.getElementById('noteContent').value; 
+            console.log("Continuar: Contenido actual para continuar:", currentContent.substring(0,100) + "...");
+
+
+            const prompt = `Continúa escribiendo el siguiente texto en español de forma natural y coherente, añadiendo uno o dos párrafos que fluyan bien con el contenido existente. Evita repetir frases introductorias como "Continuación:". Simplemente añade el nuevo texto.\n\nTexto existente:\n"${currentContent}"\n\nTexto adicional:`;
+            console.log("Continuar: Prompt para Gemini:", prompt);
+            const continuation = await GeminiAPIHelper.generateText(prompt);
+            console.log("Continuar: Respuesta de Gemini (continuación):", continuation);
+
+            if (continuation) {
+                document.getElementById('noteContent').value += `\n\n${continuation.trim()}`;
+                console.log("Continuar: Contenido actualizado en textarea.");
+                await saveNote(false); 
+                showNotification('Texto continuado y añadido a la nota.', 'success');
+            } else {
+                console.log("Continuar: Gemini no devolvió una continuación.");
+            }
+        }
+        async function suggestEventDetailsWithGemini() {
+            console.log("Intentando sugerir detalles del evento...");
+            const eventTitle = document.getElementById('eventTitleInput').value.trim();
+            if (!eventTitle) {
+                showNotification('Por favor, ingresa un título para el evento.', 'warning');
+                console.log("Sugerir Detalles Evento: Título vacío.");
+                return;
+            }
+            console.log("Sugerir Detalles Evento: Título:", eventTitle);
+
+            const prompt = `Para un evento titulado "${eventTitle}", sugiere una descripción atractiva y concisa en español. La descripción no debe exceder las 150 palabras.`;
+            console.log("Sugerir Detalles Evento: Prompt para Gemini:", prompt);
+            const suggestion = await GeminiAPIHelper.generateText(prompt);
+            console.log("Sugerir Detalles Evento: Respuesta de Gemini:", suggestion);
+
+            if (suggestion) {
+                document.getElementById('eventDescriptionInput').value = suggestion.trim();
+                showNotification('Descripción sugerida y añadida.', 'success');
+            } else {
+                console.log("Sugerir Detalles Evento: Gemini no devolvió una sugerencia.");
+            }
+        }
+
+        async function getDailyTipWithGemini() {
+            console.log("Obteniendo consejo del día...");
+            const tipModalContent = document.getElementById('tipModalContent');
+            tipModalContent.textContent = 'Obteniendo consejo...';
+            openModal('tipModal');
+
+            const prompt = "Dame un consejo de productividad corto, útil e inspirador en español (máximo 2 frases).";
+            console.log("Consejo del Día: Prompt para Gemini:", prompt);
+            const tip = await GeminiAPIHelper.generateText(prompt);
+            console.log("Consejo del Día: Respuesta de Gemini:", tip);
+
+            if (tip) {
+                tipModalContent.textContent = tip.trim();
+            } else {
+                tipModalContent.textContent = 'No se pudo obtener un consejo en este momento. Intenta de nuevo más tarde.';
+                console.log("Consejo del Día: Gemini no devolvió un consejo.");
+            }
+        }
+
+
+        function showSection(sectionName) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            const activeSection = document.getElementById(sectionName);
+            if (activeSection) activeSection.classList.add('active');
+
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
+            if (activeLink) activeLink.classList.add('active');
+
+            currentSection = sectionName;
+            localStorage.setItem('lastSection', sectionName); 
+
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('show') && window.innerWidth <= 768) { 
+                toggleSidebar(); 
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            sidebar.classList.toggle('show');
+            mainContent.classList.toggle('expanded', !sidebar.classList.contains('show')); 
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(currentTheme);
+        }
+
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            currentTheme = theme;
+            const themeIcon = document.querySelector('#themeToggle i');
+            const darkModeSwitch = document.getElementById('darkModeToggle');
+
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+                if (darkModeSwitch) darkModeSwitch.classList.add('active');
+            } else {
+                themeIcon.className = 'fas fa-moon';
+                if (darkModeSwitch) darkModeSwitch.classList.remove('active');
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'es' ? 'en' : 'es';
+            setLanguage(currentLanguage);
+        }
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            document.getElementById('langToggle').innerHTML = `<i class="fas fa-globe"></i> ${lang.toUpperCase()}`;
+            document.getElementById('languageSelect').value = lang;
+            localStorage.setItem('language', lang);
+        }
+
+        function changeLanguage(e) {
+            setLanguage(e.target.value);
+        }
+
+        function changeFontSize(e) {
+            const size = e.target.value;
+            document.body.style.fontSize = size === 'small' ? '14px' : size === 'large' ? '18px' : '16px';
+            localStorage.setItem('fontSize', size);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedFontSize = localStorage.getItem('fontSize');
+            if (savedFontSize) {
+                document.body.style.fontSize = savedFontSize === 'small' ? '14px' : savedFontSize === 'large' ? '18px' : '16px';
+                document.getElementById('fontSizeSelect').value = savedFontSize;
+            }
+        });
+
+
+        async function createFolder() {
+            document.getElementById('folderModal').classList.add('active');
+        }
+
+        async function confirmCreateFolder() {
+            const name = document.getElementById('folderNameInput').value.trim();
+            if (name) {
+                const newFolderData = { name: name }; 
+                const createdFolder = await DatabaseManager.create('folders', newFolderData);
+                if (createdFolder) {
+                    folders.push({...createdFolder, id: createdFolder.id, name: createdFolder.name, created: new Date(createdFolder.created_at)});
+                    renderFolders();
+                    closeModal('folderModal');
+                    document.getElementById('folderNameInput').value = '';
+                    showNotification('Carpeta creada exitosamente.', 'success');
+                }
+            }
+        }
+
+        function renderFolders() {
+            const grid = document.getElementById('foldersGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            folders.sort((a,b) => new Date(b.created) - new Date(a.created)); 
+
+            folders.forEach(folder => {
+                const folderElement = document.createElement('div');
+                folderElement.className = 'folder-item';
+                folderElement.innerHTML = `
+                    <div class="folder-icon"><i class="fas fa-folder"></i></div>
+                    <div class="folder-name">${folder.name}</div>
+                    <div class="folder-stats">0 archivos</div>
+                `;
+                folderElement.addEventListener('click', () => openFolder(folder.id));
+                grid.appendChild(folderElement);
+            });
+        }
+
+        function openFolder(folderId) {
+            const folder = folders.find(f => f.id === folderId);
+            if (folder) {
+                alert(`Abriendo carpeta: ${folder.name} (ID: ${folder.id}).`);
+            }
+        }
+
+        function uploadFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileSelect(e) {
+            const selectedFiles = Array.from(e.target.files);
+            processFiles(selectedFiles);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').classList.remove('dragover');
+            const droppedFiles = Array.from(e.dataTransfer.files);
+            processFiles(droppedFiles);
+        }
+
+        async function processFiles(fileList) {
+            let filesProcessedCount = 0;
+            for (const file of fileList) {
+                const fileObj = {
+                    file_name: file.name, 
+                    size: file.size,
+                    type: file.type,
+                    file: file // Guardar el objeto File para previsualización local
+                };
+                const createdFileMetadata = await DatabaseManager.create('files', {file_name: file.name, size: file.size, type: file.type});
+                if (createdFileMetadata) {
+                    // Añadir el objeto File completo al array local para previsualización, usando el ID de la DB
+                    files.push({...createdFileMetadata, id: createdFileMetadata.id, file_name: createdFileMetadata.file_name, uploaded: new Date(createdFileMetadata.uploaded_at), file: file });
+                    filesProcessedCount++;
+                }
+            }
+            renderFiles();
+            if (filesProcessedCount > 0) {
+                showNotification(`${filesProcessedCount} archivo(s) procesado(s) y guardado(s).`, 'success');
+            }
+        }
+
+        function renderFiles() {
+            const grid = document.getElementById('filesGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+
+            const searchTerm = document.getElementById('fileSearch').value.toLowerCase();
+            const activeFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+
+            const filteredFiles = files.filter(file => {
+                const nameMatch = file.file_name ? file.file_name.toLowerCase().includes(searchTerm) : false;
+                if (!nameMatch) return false;
+
+                if (activeFilter === 'all') return true;
+                if (activeFilter === 'image') return file.type && file.type.startsWith('image/');
+                if (activeFilter === 'document') return file.type && (file.type.includes('pdf') || file.type.includes('word') || file.type.includes('document') || file.type.includes('excel') || file.type.includes('spreadsheet') || file.type.includes('text'));
+                if (activeFilter === 'video') return file.type && file.type.startsWith('video/');
+                if (activeFilter === 'audio') return file.type && file.type.startsWith('audio/');
+                return false;
+            }).sort((a,b) => new Date(b.uploaded) - new Date(a.uploaded)); 
+
+
+            if (filteredFiles.length === 0) {
+                grid.innerHTML = `<p style="color: var(--text-secondary); grid-column: 1 / -1; text-align: center;">No hay archivos que coincidan.</p>`;
+                return;
+            }
+
+            filteredFiles.forEach(file => {
+                const fileElement = document.createElement('div');
+                fileElement.className = 'file-item';
+                const icon = getFileIcon(file.type);
+                const size = formatFileSize(file.size);
+                fileElement.innerHTML = `
+                    <div class="file-icon" style="color: ${getFileColor(file.type)}"><i class="${icon}"></i></div>
+                    <div class="file-name" title="${file.file_name}">${file.file_name}</div>
+                    <div class="file-size">${size}</div>`;
+                fileElement.addEventListener('click', () => openFilePreviewModal(file)); // <-- AÑADIDO EVENT LISTENER
+                grid.appendChild(fileElement);
+            });
+        }
+
+        function getFileIcon(type) {
+            if (!type) return 'fas fa-file';
+            if (type.startsWith('image/')) return 'fas fa-file-image';
+            if (type.startsWith('video/')) return 'fas fa-file-video';
+            if (type.startsWith('audio/')) return 'fas fa-file-audio';
+            if (type.includes('pdf')) return 'fas fa-file-pdf';
+            if (type.includes('word') || type.includes('document')) return 'fas fa-file-word';
+            if (type.includes('excel') || type.includes('spreadsheet')) return 'fas fa-file-excel';
+            if (type.includes('presentation') || type.includes('powerpoint')) return 'fas fa-file-powerpoint';
+            if (type.includes('zip') || type.includes('archive')) return 'fas fa-file-archive';
+            return 'fas fa-file';
+        }
+
+        function getFileColor(type) {
+            if (!type) return '#6c5ce7';
+            if (type.startsWith('image/')) return '#ff6b6b';
+            if (type.startsWith('video/')) return '#4ecdc4';
+            if (type.startsWith('audio/')) return '#45b7d1';
+            if (type.includes('pdf')) return '#ff4757';
+            if (type.includes('word')) return '#2e86de';
+            if (type.includes('excel')) return '#1dd1a1';
+            if (type.includes('presentation')) return '#f39c12';
+            return '#6c5ce7';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0 || !bytes) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function searchFiles() { renderFiles(); }
+        function filterFiles(filter) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.filter-btn[data-filter="${filter}"]`).classList.add('active');
+            renderFiles();
+        }
+
+        async function createNote() {
+            const newNoteData = { title: 'Nueva Nota', content: '', pinned: false };
+            const createdNote = await DatabaseManager.create('notes', newNoteData);
+            if (createdNote) {
+                const fullNote = {...createdNote, id: createdNote.id, created: new Date(createdNote.created_at), updated: new Date(createdNote.updated_at) };
+                notes.unshift(fullNote);
+                currentNoteId = fullNote.id;
+                renderNotes();
+                selectNote(fullNote.id);
+                showNotification('Nota creada.', 'success');
+            }
+        }
+        function renderNotes() {
+            const notesListContainer = document.getElementById('notesList');
+            if(!notesListContainer) return;
+            notesListContainer.innerHTML = '';
+
+            notes.sort((a,b) => new Date(b.updated) - new Date(a.updated)) 
+                 .sort((a,b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+
+            notes.forEach(note => {
+                const noteElement = document.createElement('div');
+                noteElement.className = `note-item ${currentNoteId === note.id ? 'active' : ''}`;
+                noteElement.setAttribute('data-note-id', note.id);
+                noteElement.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong title="${note.title}">${note.title ? note.title.substring(0,30) : 'Sin Título'}${note.title && note.title.length > 30 ? '...' : ''}</strong>
+                        <div>
+                          <i class="fas fa-thumbtack pin-note" style="color: ${note.pinned ? 'var(--accent-color)' : 'var(--text-secondary)'}; cursor:pointer; margin-right: 8px;" title="Fijar/Desfijar Nota"></i>
+                          <i class="fas fa-trash delete-note-icon" style="color: var(--text-secondary); cursor:pointer;" title="Eliminar Nota"></i>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        ${note.content ? note.content.substring(0, 50) : ''}${note.content && note.content.length > 50 ? '...' : ''}
+                    </div>`;
+                noteElement.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('pin-note')) {
+                        e.stopPropagation(); togglePinNote(note.id);
+                    } else if (e.target.classList.contains('delete-note-icon')) {
+                        e.stopPropagation(); deleteNoteConfirmation(note.id);
+                    } else {
+                        selectNote(note.id);
+                    }
+                });
+                notesListContainer.appendChild(noteElement);
+            });
+             if (!currentNoteId && notes.length > 0) {
+                currentNoteId = notes[0].id;
+            }
+            if (currentNoteId) {
+                selectNote(currentNoteId);
+            } else {
+                document.getElementById('noteTitle').value = '';
+                document.getElementById('noteContent').value = '';
+            }
+        }
+
+        async function togglePinNote(noteId) {
+            const noteIndex = notes.findIndex(n => n.id === noteId);
+            if (noteIndex > -1) {
+                const originalPinnedState = notes[noteIndex].pinned;
+                notes[noteIndex].pinned = !notes[noteIndex].pinned;
+                notes[noteIndex].updated = new Date(); 
+                
+                const updatedNoteDB = await DatabaseManager.update('notes', noteId, { pinned: notes[noteIndex].pinned });
+                if (updatedNoteDB) {
+                     notes[noteIndex] = {...notes[noteIndex], ...updatedNoteDB, updated: new Date(updatedNoteDB.updated_at), created: new Date(updatedNoteDB.created_at) };
+                    renderNotes(); 
+                } else {
+                    notes[noteIndex].pinned = originalPinnedState; 
+                    notes[noteIndex].updated = new Date(notes[noteIndex].updated_at); 
+                }
+            }
+        }
+
+        function deleteNoteConfirmation(noteId) {
+            showCustomConfirm("¿Estás seguro de eliminar esta nota?", async () => {
+                const success = await DatabaseManager.delete('notes', noteId);
+                if (success) {
+                    notes = notes.filter(n => n.id !== noteId);
+                    if (currentNoteId === noteId) {
+                        currentNoteId = notes.length > 0 ? notes[0].id : null;
+                         if (currentNoteId) selectNote(currentNoteId);
+                         else {
+                            document.getElementById('noteTitle').value = '';
+                            document.getElementById('noteContent').value = '';
+                        }
+                    }
+                    renderNotes();
+                    showNotification('Nota eliminada.', 'success');
+                }
+            });
+        }
+
+        function selectNote(noteId) {
+            currentNoteId = noteId;
+            const currentNote = notes.find(n => n.id === currentNoteId);
+            if (currentNote) {
+                document.getElementById('noteTitle').value = currentNote.title || '';
+                document.getElementById('noteContent').value = currentNote.content || '';
+            } else {
+                document.getElementById('noteTitle').value = '';
+                document.getElementById('noteContent').value = '';
+            }
+            document.querySelectorAll('.note-item').forEach(item => item.classList.remove('active'));
+            const activeNoteElement = document.querySelector(`.note-item[data-note-id="${noteId}"]`);
+            if (activeNoteElement) activeNoteElement.classList.add('active');
+        }
+
+        async function saveNote(showNotif = true) {
+            if (currentNoteId) {
+                const noteIndex = notes.findIndex(n => n.id === currentNoteId);
+                if (noteIndex > -1) {
+                    const updatedTitle = document.getElementById('noteTitle').value.trim() || 'Nota sin título';
+                    const updatedContent = document.getElementById('noteContent').value;
+                    const dataToUpdate = {
+                        title: updatedTitle,
+                        content: updatedContent,
+                    };
+
+                    const updatedNoteFromDB = await DatabaseManager.update('notes', currentNoteId, dataToUpdate);
+                    if (updatedNoteFromDB) {
+                        notes[noteIndex] = {...notes[noteIndex], ...updatedNoteFromDB, updated: new Date(updatedNoteFromDB.updated_at), created: new Date(updatedNoteFromDB.created_at) };
+                        renderNotes();
+                        selectNote(currentNoteId);
+                        if(showNotif) showNotification('Nota guardada.', 'success');
+                    }
+                }
+            }
+        }
+
+        async function deleteNote() {
+            if (currentNoteId) {
+                deleteNoteConfirmation(currentNoteId);
+            } else {
+                showNotification("No hay ninguna nota seleccionada para eliminar.", "warning");
+            }
+        }
+
+        function autoSaveNote() {
+            clearTimeout(window.autoSaveTimeout);
+            window.autoSaveTimeout = setTimeout(() => saveNote(false), 1500);
+        }
+
+        function formatText(command) { console.warn("formatText no implementado completamente."); }
+        function insertList() { console.warn("insertList no implementado completamente."); }
+
+        function generateCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const title = document.getElementById('calendarTitle');
+            if(!grid || !title) return;
+
+            const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            title.textContent = `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+            grid.innerHTML = '';
+
+            const dayHeaders = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            dayHeaders.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day calendar-header-day';
+                dayHeader.textContent = day;
+                grid.appendChild(dayHeader);
+            });
+
+            const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            const firstDayOfWeek = firstDayOfMonth.getDay();
+            const daysInMonth = lastDayOfMonth.getDate();
+
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                grid.appendChild(document.createElement('div')).className = 'calendar-day empty';
+            }
+
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                dayElement.setAttribute('data-day', day);
+
+                if (today.getDate() === day && today.getMonth() === currentDate.getMonth() && today.getFullYear() === currentDate.getFullYear()) {
+                    dayElement.classList.add('today');
+                }
+                
+                const currentDateForFilter = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+
+                const dayEvents = events.filter(event => {
+                    if (!event.date || typeof event.date !== 'string') { 
+                        console.warn(`Evento con ID ${event.id} tiene fecha faltante o inválida en generateCalendar. Omitiendo.`);
+                        return false;
+                    }
+                    const eventDateParts = event.date.split('-');
+                    if (eventDateParts.length !== 3) { 
+                        console.warn(`Formato de fecha inválido para evento ID ${event.id}: ${event.date}. Omitiendo.`);
+                        return false;
+                    }
+                    const eventDate = new Date(parseInt(eventDateParts[0]), parseInt(eventDateParts[1]) - 1, parseInt(eventDateParts[2]));
+                    
+                    return eventDate.getFullYear() === currentDateForFilter.getFullYear() &&
+                           eventDate.getMonth() === currentDateForFilter.getMonth() &&
+                           eventDate.getDate() === currentDateForFilter.getDate();
+                });
+
+
+                if (dayEvents.length > 0) {
+                    dayElement.classList.add('has-events');
+                    const eventIndicator = document.createElement('span');
+                    eventIndicator.className = 'event-indicator';
+                    eventIndicator.title = `${dayEvents.length} evento(s)`;
+                    dayElement.appendChild(eventIndicator);
+                }
+                dayElement.addEventListener('click', () => selectDate(day));
+                grid.appendChild(dayElement);
+            }
+        }
+
+        function previousMonth() { currentDate.setMonth(currentDate.getMonth() - 1); generateCalendar(); }
+        function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); generateCalendar(); }
+        function todayView() { currentDate = new Date(); generateCalendar(); }
+
+        function selectDate(day) {
+            const selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            document.getElementById('eventDateInput').value = selectedDate.toISOString().split('T')[0];
+            document.getElementById('eventDescriptionInput').value = ''; 
+            addEvent();
+        }
+
+        function addEvent() {
+            document.getElementById('eventTitleInput').value = '';
+            document.getElementById('eventTimeInput').value = '';
+            document.getElementById('eventDescriptionInput').value = ''; 
+            if(!document.getElementById('eventDateInput').value) { 
+                 document.getElementById('eventDateInput').value = new Date().toISOString().split('T')[0];
+            }
+            document.getElementById('eventModal').classList.add('active');
+        }
+
+        async function confirmAddEvent() {
+            const title = document.getElementById('eventTitleInput').value.trim();
+            const date = document.getElementById('eventDateInput').value;
+            const time = document.getElementById('eventTimeInput').value;
+            const description = document.getElementById('eventDescriptionInput').value.trim();
+
+
+            if (title && date) {
+                const newEventData = { title, date, time, description }; 
+                const createdEvent = await DatabaseManager.create('events', newEventData);
+                if (createdEvent) {
+                    events.push({...createdEvent, id: createdEvent.id, created: new Date(createdEvent.created_at), date: createdEvent.date.split('T')[0], description: createdEvent.description });
+                    generateCalendar();
+                    closeModal('eventModal');
+                    showNotification('Evento creado.', 'success');
+                }
+            } else {
+                showNotification('Por favor, completa título y fecha.', 'warning');
+            }
+        }
+
+        function closeModal(modalId) { 
+            const modal = document.getElementById(modalId);
+            if(modal) modal.classList.remove('active');
+        }
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.classList.add('active');
+        }
+
+        function showDatabaseConfig() { document.getElementById('databaseModal').classList.add('active'); }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification slide-in ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.classList.remove('slide-in');
+                notification.classList.add('slide-out');
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        function showCustomConfirm(message, onConfirm) {
+            const confirmModal = document.createElement('div');
+            confirmModal.className = 'modal active custom-confirm-modal';
+            confirmModal.innerHTML = `
+                <div class="modal-content">
+                    <p style="margin-bottom: 1.5rem; color: var(--text-primary);">${message}</p>
+                    <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                        <button class="btn btn-secondary" id="customConfirmCancel">Cancelar</button>
+                        <button class="btn" id="customConfirmOk">Confirmar</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(confirmModal);
+            document.getElementById('customConfirmOk').onclick = () => { onConfirm(); confirmModal.remove(); };
+            document.getElementById('customConfirmCancel').onclick = () => confirmModal.remove();
+        }
+
+        function updateDateTime() { /* ... */ }
+        function toggleView() {
+            const icon = document.getElementById('viewIcon');
+            const gridContainer = document.getElementById('foldersGrid');
+            if(!icon || !gridContainer) return;
+            if (icon.classList.contains('fa-th')) {
+                icon.className = 'fas fa-list';
+                gridContainer.classList.add('list-view');
+                gridContainer.classList.remove('grid-view');
+            } else {
+                icon.className = 'fas fa-th';
+                gridContainer.classList.add('grid-view');
+                gridContainer.classList.remove('list-view');
+            }
+        }
+
+        function loadSampleData() { 
+            folders = [ { id: 101, name: 'Documentos (Muestra)', created: new Date() }, { id: 102, name: 'Proyectos (Muestra)', created: new Date() }];
+            notes = [ { id: 201, title: 'Nota de Bienvenida (Muestra)', content: 'Empieza a organizar tus ideas.', created: new Date(), updated: new Date(), pinned: true }];
+            files = [ {id: 301, file_name: "ejemplo_local.pdf", size: 102400, type: "application/pdf", uploaded: new Date()}]; 
+            events = [ { id: 401, title: 'Reunión Inicial (Muestra)', date: new Date().toISOString().split('T')[0], time: '10:00', description: 'Discutir objetivos del proyecto.', created: new Date() }];
+            if (notes.length > 0) currentNoteId = notes[0].id;
+            console.log("Datos de muestra cargados como fallback.");
+        }
+
+        // --- File Preview Modal Logic ---
+        function openFilePreviewModal(fileObject) {
+            const modal = document.getElementById('filePreviewModal');
+            const titleElement = document.getElementById('filePreviewTitle');
+            const imgElement = document.getElementById('filePreviewImage');
+            const videoElement = document.getElementById('filePreviewVideo');
+            const audioElement = document.getElementById('filePreviewAudio');
+            const textElement = document.getElementById('filePreviewText');
+            const fallbackElement = document.getElementById('filePreviewFallback');
+            const downloadLink = document.getElementById('fileDownloadLink');
+
+            // Ocultar todos los elementos de previsualización
+            imgElement.style.display = 'none';
+            videoElement.style.display = 'none';
+            audioElement.style.display = 'none';
+            textElement.style.display = 'none';
+            fallbackElement.style.display = 'none';
+
+            titleElement.textContent = fileObject.file_name || 'Vista Previa de Archivo';
+
+            if (fileObject.file && fileObject.file instanceof File) { // Solo si tenemos el objeto File (sesión actual)
+                const objectURL = URL.createObjectURL(fileObject.file);
+                downloadLink.href = objectURL;
+                downloadLink.download = fileObject.file_name || 'archivo';
+                downloadLink.style.display = 'inline-block';
+
+                if (fileObject.type.startsWith('image/')) {
+                    imgElement.src = objectURL;
+                    imgElement.style.display = 'block';
+                } else if (fileObject.type.startsWith('video/')) {
+                    videoElement.src = objectURL;
+                    videoElement.style.display = 'block';
+                    videoElement.load(); // Cargar el video
+                } else if (fileObject.type.startsWith('audio/')) {
+                    audioElement.src = objectURL;
+                    audioElement.style.display = 'block';
+                    audioElement.load(); // Cargar el audio
+                } else if (fileObject.type === 'application/pdf') {
+                    fallbackElement.textContent = `La previsualización directa de PDF no está disponible. Utiliza el botón de descarga.`;
+                    fallbackElement.style.display = 'block';
+                     // Podrías intentar con un iframe, pero puede tener problemas de seguridad/compatibilidad con blob URLs
+                    // const pdfFrame = document.getElementById('filePreviewPdf');
+                    // pdfFrame.src = objectURL;
+                    // pdfFrame.style.display = 'block';
+                } else if (fileObject.type.startsWith('text/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        textElement.textContent = e.target.result;
+                        textElement.style.display = 'block';
+                    }
+                    reader.onerror = function() {
+                        fallbackElement.textContent = 'Error al leer el archivo de texto.';
+                        fallbackElement.style.display = 'block';
+                    }
+                    reader.readAsText(fileObject.file);
+                } else {
+                    fallbackElement.textContent = `No hay previsualización disponible para este tipo de archivo (${fileObject.type}). Puedes intentar descargarlo.`;
+                    fallbackElement.style.display = 'block';
+                }
+            } else {
+                // Si fileObject.file no existe, es solo metadata de la DB
+                fallbackElement.textContent = 'La previsualización solo está disponible para archivos subidos en la sesión actual. Este archivo solo tiene metadata.';
+                fallbackElement.style.display = 'block';
+                downloadLink.style.display = 'none'; // No hay archivo para descargar
+            }
+            openModal('filePreviewModal');
+        }
+
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal') && !e.target.classList.contains('custom-confirm-modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                if (currentSection === 'notes' && currentNoteId) saveNote();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                if (currentSection === 'notes') createNote();
+                else if (currentSection === 'folders') createFolder();
+            }
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal.active').forEach(modal => modal.classList.remove('active'));
+            }
+        });
+
+        window.addEventListener('resize', function() { 
+            const sidebar = document.getElementById('sidebar');
+             const mainContent = document.getElementById('mainContent');
+            if (window.innerWidth > 768) {
+                if(sidebar.classList.contains('show')){
+                }
+            } else {
+            }
+        });
+
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.closest('.modal-content')) {
+                e.preventDefault();
+                if (e.target.id === 'folderNameInput') confirmCreateFolder();
+                else if (e.target.id === 'eventTitleInput' || e.target.id === 'eventDateInput' || e.target.id === 'eventTimeInput') {
+                     if(e.target.id === 'eventTimeInput' || !document.getElementById('eventTimeInput').value) confirmAddEvent();
+                }
+            }
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => { /* Registro de SW si se usa */ });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggles = document.querySelectorAll('.settings-container .toggle-switch');
+            toggles.forEach(toggle => {
+                if (toggle.id === 'darkModeToggle') {
+                    toggle.classList.toggle('active', currentTheme === 'dark');
+                }
+                toggle.addEventListener('click', function() {
+                    if (this.id !== 'darkModeToggle') this.classList.toggle('active');
+                });
+            });
+        });
+
+        window.MySpaceApp = { showSection, createFolder, createNote, saveNote, addEvent, setTheme, setLanguage, DatabaseManager, folders, notes, files, events };
+        console.log('Mi Espacio Inteligente - Aplicación cargada.');
+    </script>
+</body>
+</html>

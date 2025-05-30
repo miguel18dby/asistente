@@ -938,21 +938,21 @@
         }
         #filePreviewModal .modal-body {
             flex-grow: 1;
-            overflow-y: auto; 
+            overflow-y: auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 200px; 
+            min-height: 200px;
         }
-        #filePreviewImage, #filePreviewVideo, #filePreviewPdfJsViewer /* Cambiado de Embed a Iframe */ {
+        #filePreviewImage, #filePreviewVideo, #filePreviewIframe { 
             max-width: 100%;
-            max-height: 70vh; 
-            object-fit: contain; 
-            border-radius: 8px; 
+            max-height: 70vh;
+            object-fit: contain;
+            margin: auto; 
+            border: none; 
         }
          #filePreviewAudio {
             width: 100%;
-            max-width: 500px; 
         }
         #filePreviewText {
             background: var(--hover-bg);
@@ -964,7 +964,6 @@
             word-wrap: break-word;
             color: var(--text-primary);
             width: 100%;
-            text-align: left;
         }
         /* Responsive Design */
         @media (max-width: 992px) {
@@ -1170,45 +1169,54 @@
                 </div>
                 <div class="cards-grid">
                     <div class="card">
-                        <div class="card-icon"><i class="fas fa-folder-open"></i></div>
+                        <div class="card-icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
                         <h3 data-translate="home.cards.folders.title">Gestión de Carpetas</h3>
                         <p data-translate="home.cards.folders.desc">Organiza tus archivos de manera inteligente con carpetas personalizadas y clasificación automática.</p>
                     </div>
                     <div class="card">
-                        <div class="card-icon"><i class="fas fa-edit"></i></div>
+                        <div class="card-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
                         <h3 data-translate="home.cards.notes.title">Notas Inteligentes</h3>
                         <p data-translate="home.cards.notes.desc">Crea, edita y organiza tus ideas con un editor enriquecido y sugerencias de IA.</p>
                     </div>
                     <div class="card">
-                        <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
                         <h3 data-translate="home.cards.calendar.title">Calendario Personal</h3>
                         <p data-translate="home.cards.calendar.desc">Planifica tu día con recordatorios inteligentes y gestión avanzada de eventos.</p>
                     </div>
                     <div class="card">
-                        <div class="card-icon"><i class="fas fa-robot"></i></div>
+                        <div class="card-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
                         <h3 data-translate="home.cards.ai.title">Asistente IA</h3>
                         <p data-translate="home.cards.ai.desc">Tu compañero inteligente para responder preguntas y sugerir mejoras en tu flujo de trabajo.</p>
                     </div>
                 </div>
             </section>
-             <section class="content-section" id="folders">
+            <section class="content-section" id="folders">
                 <div class="toolbar">
                     <button class="btn" onclick="createFolder()">
                         <i class="fas fa-plus"></i>
                         <span data-translate="folders.create">Nueva Carpeta</span>
                     </button>
-                    <button class="btn btn-secondary" onclick="uploadFile()"> <i class="fas fa-upload"></i>
-                        <span data-translate="folders.upload">Subir Archivo (a Carpeta Actual)</span>
+                    <button class="btn btn-secondary" onclick="uploadFile()">
+                        <i class="fas fa-upload"></i>
+                        <span data-translate="folders.upload">Subir Archivo</span>
                     </button>
                     <button class="btn btn-secondary" onclick="toggleView()">
                         <i class="fas fa-th" id="viewIcon"></i>
                         <span data-translate="folders.view">Vista</span>
                     </button>
                 </div>
-                <div class="drop-zone" id="dropZoneFolders">
+                <div class="drop-zone" id="dropZone">
                     <i class="fas fa-cloud-upload-alt"></i>
-                    <h3 data-translate="folders.dropzone.title">Arrastra archivos a la carpeta actual</h3>
-                    <p data-translate="folders.dropzone.desc">O haz clic en "Subir Archivo"</p>
+                    <h3 data-translate="folders.dropzone.title">Arrastra y suelta tus archivos aquí</h3>
+                    <p data-translate="folders.dropzone.desc">O haz clic para seleccionar archivos</p>
                 </div>
                 <div class="folders-grid" id="foldersGrid">
                     </div>
@@ -1236,12 +1244,24 @@
                     </div>
                     <div class="note-editor">
                         <div class="editor-toolbar">
-                            <button class="editor-btn" onclick="formatText('bold')"><i class="fas fa-bold"></i></button>
-                            <button class="editor-btn" onclick="formatText('italic')"><i class="fas fa-italic"></i></button>
-                            <button class="editor-btn" onclick="formatText('underline')"><i class="fas fa-underline"></i></button>
-                            <button class="editor-btn" onclick="insertList()"><i class="fas fa-list"></i></button>
-                            <button class="editor-btn" id="summarizeNoteBtn" title="Resumir Nota con IA"><i class="fas fa-star ai-icon"></i> Resumir</button>
-                            <button class="editor-btn" id="continueWritingBtn" title="Continuar Escritura con IA"><i class="fas fa-pen-fancy ai-icon"></i> Continuar</button>
+                            <button class="editor-btn" onclick="formatText('bold')">
+                                <i class="fas fa-bold"></i>
+                            </button>
+                            <button class="editor-btn" onclick="formatText('italic')">
+                                <i class="fas fa-italic"></i>
+                            </button>
+                            <button class="editor-btn" onclick="formatText('underline')">
+                                <i class="fas fa-underline"></i>
+                            </button>
+                            <button class="editor-btn" onclick="insertList()">
+                                <i class="fas fa-list"></i>
+                            </button>
+                            <button class="editor-btn" id="summarizeNoteBtn" title="Resumir Nota con IA">
+                                <i class="fas fa-star ai-icon"></i> Resumir
+                            </button>
+                            <button class="editor-btn" id="continueWritingBtn" title="Continuar Escritura con IA">
+                                <i class="fas fa-pen-fancy ai-icon"></i> Continuar
+                            </button>
                         </div>
                         <input type="text" class="note-title" id="noteTitle" placeholder="Título de la nota..." data-translate="notes.title.placeholder">
                         <textarea class="note-content" id="noteContent" placeholder="Escribe tu nota aquí..." data-translate="notes.content.placeholder"></textarea>
@@ -1261,29 +1281,21 @@
                 </div>
                 <div class="calendar-container">
                     <div class="calendar-header">
-                        <button class="calendar-nav" onclick="previousMonth()"><i class="fas fa-chevron-left"></i></button>
+                        <button class="calendar-nav" onclick="previousMonth()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
                         <h2 class="calendar-title" id="calendarTitle">Enero 2024</h2>
-                        <button class="calendar-nav" onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+                        <button class="calendar-nav" onclick="nextMonth()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
                     <div class="calendar-grid" id="calendarGrid">
                         </div>
                 </div>
             </section>
             <section class="content-section" id="files">
-                 <div class="toolbar">
-                     <button class="btn" onclick="triggerFileInput()">
-                        <i class="fas fa-upload"></i>
-                        <span data-translate="files.uploadGeneral">Subir Nuevo Archivo</span>
-                    </button>
-                </div>
-                <div class="drop-zone" id="dropZoneFiles">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <h3 data-translate="files.dropzone.title">Arrastra y suelta archivos aquí para subirlos</h3>
-                    <p data-translate="files.dropzone.desc">O haz clic en "Subir Nuevo Archivo"</p>
-                </div>
-                <hr style="margin: 2rem 0; border-color: var(--border-color);">
-                <div class="files-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-                    <input type="text" class="search-box" placeholder="Buscar en mis archivos..." data-translate="files.search.placeholder" id="fileSearch">
+                <div class="files-header">
+                    <input type="text" class="search-box" placeholder="Buscar archivos..." data-translate="files.search.placeholder" id="fileSearch">
                     <div class="filter-buttons">
                         <button class="filter-btn active" data-filter="all" data-translate="files.filter.all">Todos</button>
                         <button class="filter-btn" data-filter="image" data-translate="files.filter.images">Imágenes</button>
@@ -1302,7 +1314,9 @@
                         <div class="setting-item">
                             <span class="setting-label" data-translate="settings.appearance.theme">Modo Oscuro</span>
                             <div class="setting-control">
-                                <div class="toggle-switch active" id="darkModeToggle"><div class="toggle-slider"></div></div>
+                                <div class="toggle-switch active" id="darkModeToggle">
+                                    <div class="toggle-slider"></div>
+                                </div>
                             </div>
                         </div>
                         <div class="setting-item">
@@ -1316,7 +1330,7 @@
                             </div>
                         </div>
                     </div>
-                     <div class="settings-group">
+                    <div class="settings-group">
                         <h3 data-translate="settings.language.title">Idioma</h3>
                         <div class="setting-item">
                             <span class="setting-label" data-translate="settings.language.select">Idioma de la Interfaz</span>
@@ -1333,13 +1347,17 @@
                         <div class="setting-item">
                             <span class="setting-label" data-translate="settings.ai.suggestions">Sugerencias Automáticas</span>
                             <div class="setting-control">
-                                <div class="toggle-switch active" id="aiSuggestionsToggle"><div class="toggle-slider"></div></div>
+                                <div class="toggle-switch active" id="aiSuggestionsToggle">
+                                    <div class="toggle-slider"></div>
+                                </div>
                             </div>
                         </div>
-                         <div class="setting-item">
+                        <div class="setting-item">
                             <span class="setting-label" data-translate="settings.ai.voice">Reconocimiento de Voz</span>
                             <div class="setting-control">
-                                <div class="toggle-switch" id="voiceToggle"><div class="toggle-slider"></div></div>
+                                <div class="toggle-switch" id="voiceToggle">
+                                    <div class="toggle-slider"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1366,23 +1384,29 @@
             </section>
         </main>
     </div>
-
     <div class="modal" id="folderModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('folderModal')"><i class="fas fa-times"></i></button>
+            <button class="modal-close" onclick="closeModal('folderModal')">
+                <i class="fas fa-times"></i>
+            </button>
             <h3 class="modal-title" data-translate="modal.folder.title">Nueva Carpeta</h3>
             <div class="form-group">
                 <label class="form-label" data-translate="modal.folder.name">Nombre de la carpeta:</label>
                 <input type="text" class="form-input" id="folderNameInput" placeholder="Mi nueva carpeta">
             </div>
             <div class="form-group">
-                <button class="btn" onclick="confirmCreateFolder()"><i class="fas fa-check"></i> <span data-translate="modal.folder.create">Crear Carpeta</span></button>
+                <button class="btn" onclick="confirmCreateFolder()">
+                    <i class="fas fa-check"></i>
+                    <span data-translate="modal.folder.create">Crear Carpeta</span>
+                </button>
             </div>
         </div>
     </div>
     <div class="modal" id="eventModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('eventModal')"><i class="fas fa-times"></i></button>
+            <button class="modal-close" onclick="closeModal('eventModal')">
+                <i class="fas fa-times"></i>
+            </button>
             <h3 class="modal-title" data-translate="modal.event.title">Nuevo Evento</h3>
             <div class="form-group">
                 <label class="form-label" data-translate="modal.event.name">Título del evento:</label>
@@ -1406,13 +1430,18 @@
                 <input type="time" class="form-input" id="eventTimeInput">
             </div>
             <div class="form-group">
-                <button class="btn" onclick="confirmAddEvent()"><i class="fas fa-check"></i> <span data-translate="modal.event.create">Crear Evento</span></button>
+                <button class="btn" onclick="confirmAddEvent()">
+                    <i class="fas fa-check"></i>
+                    <span data-translate="modal.event.create">Crear Evento</span>
+                </button>
             </div>
         </div>
     </div>
-     <div class="modal" id="databaseModal">
+    <div class="modal" id="databaseModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('databaseModal')"><i class="fas fa-times"></i></button>
+            <button class="modal-close" onclick="closeModal('databaseModal')">
+                <i class="fas fa-times"></i>
+            </button>
             <h3 class="modal-title" data-translate="modal.database.title">Configuración de Base de Datos</h3>
             <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" data-translate="modal.database.desc">
                 Para conectar tu base de datos Supabase, necesitas añadir tu URL de Supabase y tu Clave Anónima (Anon Key)
@@ -1426,18 +1455,22 @@
                 <code>const SUPABASE_ANON_KEY = 'tu-clave-anon';</code>
             </p>
             <div class="form-group">
-                <button class="btn" onclick="closeModal('databaseModal')"><i class="fas fa-check"></i> <span data-translate="modal.database.connect">Entendido</span></button>
+                <button class="btn" onclick="closeModal('databaseModal')">
+                    <i class="fas fa-check"></i>
+                    <span data-translate="modal.database.connect">Entendido</span>
+                </button>
             </div>
         </div>
     </div>
-    <div class="modal" id="tipModal">
+     <div class="modal" id="tipModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('tipModal')"><i class="fas fa-times"></i></button>
+            <button class="modal-close" onclick="closeModal('tipModal')">
+                <i class="fas fa-times"></i>
+            </button>
             <h3 class="modal-title" id="tipModalTitle"> ✨  Consejo del Día</h3>
             <p id="tipModalContent" style="color: var(--text-secondary); line-height: 1.6;">Cargando consejo...</p>
         </div>
     </div>
-
     <div class="modal" id="filePreviewModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('filePreviewModal')">
@@ -1445,11 +1478,11 @@
             </button>
             <h3 class="modal-title" id="filePreviewTitle">Vista Previa de Archivo</h3>
             <div class="modal-body" id="filePreviewBody" style="text-align: center;">
-                <img id="filePreviewImage" alt="Previsualización de Imagen" style="display:none;">
-                <video id="filePreviewVideo" style="display:none;" controls></video>
-                <audio id="filePreviewAudio" style="display:none;" controls></audio>
-                <iframe id="filePreviewPdfJsViewer" style="display:none; width:100%; height:70vh; border: none;" title="Visor de PDF"></iframe>
-                <pre id="filePreviewText" style="display:none;"></pre>
+                <img id="filePreviewImage" src="#" alt="Previsualización de Imagen" style="display:none; max-width:100%; max-height: 70vh; object-fit: contain; margin: auto;">
+                <video id="filePreviewVideo" src="#" style="display:none; max-width:100%; max-height: 70vh; margin: auto;" controls></video>
+                <audio id="filePreviewAudio" src="#" style="display:none; width:100%; margin-top: 1rem;" controls></audio>
+                <iframe id="filePreviewIframe" style="display:none; width:100%; height:70vh; border:none;"></iframe>
+                <pre id="filePreviewText" style="display:none; white-space:pre-wrap; word-wrap:break-word; max-height: 70vh; overflow-y:auto; background: var(--hover-bg); padding: 1rem; border-radius: 8px; text-align: left;"></pre>
                 <p id="filePreviewFallback" style="display:none; padding: 1rem; color: var(--text-secondary);"></p>
             </div>
             <div class="form-group" style="margin-top: 1.5rem; text-align: right;">
@@ -1459,20 +1492,22 @@
             </div>
         </div>
     </div>
-
     <div class="db-status" id="dbStatus">
         <div style="display: flex; align-items: center; gap: 0.5rem;">
             <i class="fas fa-database"></i>
             <span data-translate="db.status.pending">Base de Datos: Pendiente</span>
         </div>
     </div>
-    <input type="file" id="fileInput" style="display: none;"> <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
-
+    <input type="file" id="fileInput" multiple style="display: none;">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
     <script>
         // --- Configuración de Supabase ---
-        const SUPABASE_URL = 'https://kuzctbrowwnrwvpvqnky.supabase.co'; 
+        const SUPABASE_URL = 'https://kuzctbrowwnrwvpvqnky.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1emN0YnJvd3ducnd2cHZxbmt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyNzAxMDYsImV4cCI6MjA2Mzg0NjEwNn0.52DbeVnoMpGf1OsagJAsgNjje4oC4N2vunBE41uELpw';
         // --- Fin de Configuración de Supabase ---
+
         let supabase = null;
 
         // Variables Globales
@@ -1490,109 +1525,230 @@
         const GeminiAPIHelper = {
             apiKey: "", 
             apiUrl: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`,
-            showLoading: function() { document.getElementById('loadingOverlay').classList.add('active'); },
-            hideLoading: function() { document.getElementById('loadingOverlay').classList.remove('active'); },
+
+            showLoading: function() {
+                console.log("GeminiAPI: Mostrando carga...");
+                document.getElementById('loadingOverlay').classList.add('active');
+            },
+
+            hideLoading: function() {
+                console.log("GeminiAPI: Ocultando carga.");
+                document.getElementById('loadingOverlay').classList.remove('active');
+            },
+
             generateText: async function(prompt) {
+                console.log("GeminiAPI: generateText llamado con prompt:", prompt);
                 this.showLoading();
                 let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                 const payload = { contents: chatHistory };
+                console.log("GeminiAPI: Payload:", JSON.stringify(payload));
+                
                 try {
-                    const finalApiUrl = this.apiKey ? `${this.apiUrl}?key=${this.apiKey}` : this.apiUrl;
-                    const response = await fetch(finalApiUrl, {
+                    console.log("GeminiAPI: Realizando fetch a:", `${this.apiUrl}?key=TU_API_KEY_AQUI_SI_PRUEBAS_LOCALMENTE`); 
+                    const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
+                    console.log("GeminiAPI: Respuesta recibida, status:", response.status);
+
                     if (!response.ok) {
                         const errorBody = await response.text();
-                        console.error('GeminiAPI: Error en la respuesta:', response.status, errorBody);
-                        throw new Error(`Error de la API de Gemini: ${response.status}`);
+                        console.error('GeminiAPI: Error en la respuesta de la API:', response.status, response.statusText, errorBody);
+                        throw new Error(`Error de la API de Gemini: ${response.status} ${response.statusText}`);
                     }
+
                     const result = await response.json();
-                    this.hideLoading();
-                    if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
-                        return result.candidates[0].content.parts[0].text;
+                    console.log("GeminiAPI: Resultado JSON:", result);
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        this.hideLoading();
+                        const generatedText = result.candidates[0].content.parts[0].text;
+                        console.log("GeminiAPI: Texto generado:", generatedText);
+                        return generatedText;
                     } else {
-                        console.error('GeminiAPI: Respuesta inesperada:', result);
-                        if (result.promptFeedback?.blockReason) {
-                             throw new Error(`Contenido bloqueado por Gemini: ${result.promptFeedback.blockReason}`);
+                        console.error('GeminiAPI: Respuesta inesperada de la API:', result);
+                        if (result.promptFeedback && result.promptFeedback.blockReason) {
+                            throw new Error(`Contenido bloqueado por la API: ${result.promptFeedback.blockReason}`);
                         }
-                        throw new Error('Respuesta inesperada o vacía de Gemini.');
+                        throw new Error('Respuesta inesperada o vacía de la API de Gemini.');
                     }
                 } catch (error) {
                     this.hideLoading();
-                    console.error('GeminiAPI: Error al llamar:', error);
+                    console.error('GeminiAPI: Error al llamar a la API:', error);
                     showNotification(`Error de IA: ${error.message}`, 'error');
                     return null;
                 }
             }
         };
-        
-        // --- DatabaseManager ---
+        // --- Fin de Gemini API Helper ---
+
+
         const DatabaseManager = {
             isConnected: false,
-            config: { tables: { folders: 'folders', notes: 'notes', files: 'files', events: 'events' }},
+            config: { 
+                tables: {
+                    folders: 'folders',
+                    notes: 'notes',
+                    files: 'files',
+                    events: 'events',
+                }
+            },
+
             async connect() {
                 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-                    updateDbStatus(false, 'Supabase URL/Key no configuradas.'); return false;
+                    const errorMessage = 'Supabase URL o Anon Key no configuradas.';
+                    console.error(errorMessage);
+                    updateDbStatus(false, errorMessage);
+                    return false;
                 }
                 try {
                     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                    this.isConnected = true; updateDbStatus(true, 'Conectado a Supabase'); return true;
+                    console.log('Cliente de Supabase inicializado.');
+                    this.isConnected = true;
+                    updateDbStatus(true, 'Conectado a Supabase');
+                    return true;
                 } catch (error) {
-                    this.isConnected = false; updateDbStatus(false, `Error conexión: ${error.message}`); return false;
+                    console.error('Error al conectar con Supabase:', error);
+                    this.isConnected = false;
+                    updateDbStatus(false, `Error de conexión: ${error.message}`);
+                    return false;
                 }
             },
-            async create(table, dataToInsert) { 
-                if (!this.isConnected || !supabase) { showNotification('No hay conexión a la base de datos.', 'error'); return null; }
-                const { id, ...payload } = dataToInsert; 
-                payload.created_at = payload.created_at || new Date().toISOString();
-                if (table === 'notes' || table === 'events') { 
-                     payload.updated_at = payload.updated_at || payload.created_at;
-                } else if (table === 'files') { 
-                    payload.uploaded_at = payload.uploaded_at || payload.created_at;
+
+            async create(table, dataToInsert) {
+                if (!this.isConnected || !supabase) {
+                    showNotification('No hay conexión a la base de datos.', 'error');
+                    return null;
                 }
+                const { id, ...payload } = dataToInsert;
+
+                if (payload.created && payload.created instanceof Date) {
+                    payload.created_at = payload.created.toISOString();
+                    delete payload.created;
+                } else if (!payload.created_at) {
+                     payload.created_at = new Date().toISOString();
+                }
+
+                if (payload.updated && payload.updated instanceof Date) {
+                    payload.updated_at = payload.updated.toISOString();
+                    delete payload.updated;
+                } else if (!payload.updated_at && (table === 'notes' || table === 'events')) { 
+                    payload.updated_at = payload.created_at;
+                }
+
+                 if (payload.uploaded && payload.uploaded instanceof Date) {
+                    payload.uploaded_at = payload.uploaded.toISOString();
+                    delete payload.uploaded;
+                }
+
                 const { data, error } = await supabase.from(this.config.tables[table]).insert([payload]).select();
-                if (error) { console.error(`Error creando en ${table}:`, error); showNotification(`Error al crear: ${error.message}`, 'error'); return null; }
-                return data?.[0];
+                if (error) {
+                    console.error(`Error creando en ${table}:`, error);
+                    showNotification(`Error al crear en ${table}: ${error.message}`, 'error');
+                    return null;
+                }
+                console.log(`Datos creados en ${table}:`, data);
+                return data && data.length > 0 ? data[0] : null;
             },
-            async read(table) { 
+
+            async read(table) {
                 if (!this.isConnected || !supabase) return [];
                 const { data, error } = await supabase.from(this.config.tables[table]).select('*');
-                if (error) { console.error(`Error leyendo de ${table}:`, error); showNotification(`Error al leer: ${error.message}`, 'error'); return []; }
+                if (error) {
+                    console.error(`Error leyendo de ${table}:`, error);
+                    showNotification(`Error al leer de ${table}: ${error.message}`, 'error');
+                    return [];
+                }
                 return data || [];
             },
-            async update(table, id, dataToUpdate) { 
-                if (!this.isConnected || !supabase) { showNotification('No hay conexión.', 'error'); return null; }
+
+            async update(table, id, dataToUpdate) {
+                if (!this.isConnected || !supabase) {
+                     showNotification('No hay conexión a la base de datos.', 'error');
+                     return null;
+                }
                 const { id: recordId, ...updatePayload } = dataToUpdate;
-                updatePayload.updated_at = new Date().toISOString(); 
-                if (updatePayload.created_at) delete updatePayload.created_at; 
-                const { data, error } = await supabase.from(this.config.tables[table]).update(updatePayload).eq('id', id).select();
-                if (error) { console.error(`Error actualizando ${id} en ${table}:`, error); showNotification(`Error al actualizar: ${error.message}`, 'error'); return null; }
-                return data?.[0];
+
+                if (updatePayload.updated && updatePayload.updated instanceof Date) {
+                    updatePayload.updated_at = updatePayload.updated.toISOString();
+                    delete updatePayload.updated;
+                } else if (!updatePayload.updated_at) {
+                    updatePayload.updated_at = new Date().toISOString();
+                }
+                if (updatePayload.created_at) delete updatePayload.created_at;
+                if (updatePayload.created) delete updatePayload.created;
+
+                const { data, error } = await supabase
+                    .from(this.config.tables[table])
+                    .update(updatePayload)
+                    .eq('id', id)
+                    .select();
+                if (error) {
+                    console.error(`Error actualizando ID ${id} en ${table}:`, error);
+                    showNotification(`Error al actualizar en ${table}: ${error.message}`, 'error');
+                    return null;
+                }
+                console.log(`Datos actualizados en ${table} (ID: ${id}):`, data);
+                return data && data.length > 0 ? data[0] : null;
             },
+
             async delete(table, id) {
-                if (!this.isConnected || !supabase) { showNotification('No hay conexión.', 'error'); return false; }
+                if (!this.isConnected || !supabase) {
+                    showNotification('No hay conexión a la base de datos.', 'error');
+                    return false;
+                }
                 const { error } = await supabase.from(this.config.tables[table]).delete().eq('id', id);
-                if (error) { console.error(`Error eliminando ${id} de ${table}:`, error); showNotification(`Error al eliminar: ${error.message}`, 'error'); return false; }
+                if (error) {
+                    console.error(`Error eliminando ID ${id} de ${table}:`, error);
+                    showNotification(`Error al eliminar de ${table}: ${error.message}`, 'error');
+                    return false;
+                }
+                console.log(`ID ${id} eliminado de ${table}`);
                 return true;
             }
         };
+        function updateDbStatus(connected, message) {
+            const dbStatusDiv = document.getElementById('dbStatus');
+            const dbConnectionStatusSpan = document.getElementById('dbConnectionStatus');
 
-        // --- Inicialización y Carga de Datos ---
+            if (connected) {
+                dbStatusDiv.classList.add('connected');
+                dbStatusDiv.innerHTML = `<div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-database"></i><span>Conectado a Supabase</span></div>`;
+                if (dbConnectionStatusSpan) {
+                    dbConnectionStatusSpan.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success-color);"></i> Conectado`;
+                    dbConnectionStatusSpan.style.color = 'var(--success-color)';
+                }
+            } else {
+                dbStatusDiv.classList.remove('connected');
+                dbStatusDiv.innerHTML = `<div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-database"></i><span>${message || 'Desconectado'}</span></div>`;
+                if (dbConnectionStatusSpan) {
+                    dbConnectionStatusSpan.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning-color);"></i> ${message || 'Desconectado'}`;
+                    dbConnectionStatusSpan.style.color = 'var(--warning-color)';
+                }
+            }
+        }
+
+
         async function initializeApp() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             const savedLanguage = localStorage.getItem('language') || 'es';
+
             setTheme(savedTheme);
             setLanguage(savedLanguage);
+
             const connected = await DatabaseManager.connect();
             if (connected) {
                 await loadDataFromSupabase();
             } else {
                 showNotification('No se pudo conectar a Supabase. Usando datos de muestra.', 'warning');
-                loadSampleData(); 
+                loadSampleData();
                 renderAllSections();
             }
+
+            updateDateTime();
             setupEventListeners();
             showSection(localStorage.getItem('lastSection') || 'home');
         }
@@ -1601,27 +1757,41 @@
             showNotification('Cargando datos desde Supabase...', 'info');
             try {
                 folders = (await DatabaseManager.read('folders')).map(f => ({...f, id: f.id, name: f.name, created: new Date(f.created_at)})) || [];
+                
                 const notesData = await DatabaseManager.read('notes') || [];
                 notes = notesData.map(n => ({
-                    ...n, id: n.id, created: new Date(n.created_at), updated: new Date(n.updated_at)
+                    ...n,
+                    id: n.id,
+                    created: new Date(n.created_at),
+                    updated: new Date(n.updated_at)
                 })).sort((a,b) => new Date(b.updated) - new Date(a.updated))
                    .sort((a,b) => (b.pinned ? 1 : 0) - (a.pinned ? 1: 0));
-                if (notes.length > 0 && !currentNoteId) currentNoteId = notes[0].id;
-                
+
+                if (notes.length > 0 && !currentNoteId) {
+                     currentNoteId = notes[0].id;
+                }
+
                 const filesData = await DatabaseManager.read('files') || [];
                 files = filesData.map(f => ({
-                    id: f.id, file_name: f.file_name, size: f.size, type: f.type, url: f.url, 
+                    id: f.id, 
+                    file_name: f.file_name, 
+                    size: f.size,
+                    type: f.type,
+                    url: f.url, 
                     uploaded: new Date(f.uploaded_at || f.created_at), 
                 })) || [];
-                
+
+
                 const eventsData = await DatabaseManager.read('events') || [];
-                events = eventsData.map(e => ({
-                    ...e, id: e.id, created: new Date(e.created_at), 
-                    date: e.date && typeof e.date === 'string' ? e.date.split('T')[0] : new Date().toISOString().split('T')[0], 
-                    description: e.description || '' 
-                })) || [];
-                
-                console.log('Datos cargados desde Supabase:', { folders, notes, files, events });
+                events = eventsData.map(e => {
+                    const eventDateString = e.date && typeof e.date === 'string' ? e.date.split('T')[0] : new Date().toISOString().split('T')[0];
+                    if (!(e.date && typeof e.date === 'string')) {
+                        console.warn(`Evento con ID ${e.id} tiene fecha faltante o inválida ('${e.date}'). Usando fecha actual por defecto.`);
+                    }
+                    return {...e, id: e.id, created: new Date(e.created_at), date: eventDateString, description: e.description || '' };
+                }) || [];
+
+                console.log('Datos cargados desde Supabase.');
                 showNotification('Datos cargados exitosamente.', 'success');
             } catch (error) {
                 console.error('Error al cargar datos desde Supabase:', error);
@@ -1638,411 +1808,458 @@
             generateCalendar();
             renderFiles();
         }
-        
-        document.addEventListener('DOMContentLoaded', initializeApp);
 
-        // --- Manejo de Eventos UI ---
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
         function setupEventListeners() {
             document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
             document.getElementById('langToggle').addEventListener('click', toggleLanguage);
+
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    showSection(link.getAttribute('data-section'));
+                    const section = link.getAttribute('data-section');
+                    showSection(section);
                 });
             });
-            document.getElementById('darkModeToggle').addEventListener('click', function() { this.classList.toggle('active'); toggleTheme(); });
+
+            document.getElementById('darkModeToggle').addEventListener('click', function() {
+                this.classList.toggle('active', currentTheme === 'dark'); 
+            });
             document.getElementById('fontSizeSelect').addEventListener('change', changeFontSize);
             document.getElementById('languageSelect').addEventListener('change', changeLanguage);
-            
+
             document.getElementById('fileInput').addEventListener('change', handleFileSelect);
-            
-            const dropZoneFiles = document.getElementById('dropZoneFiles');
-            if (dropZoneFiles) {
-                dropZoneFiles.addEventListener('click', () => triggerFileInput()); 
-                dropZoneFiles.addEventListener('dragover', handleDragOver);
-                dropZoneFiles.addEventListener('dragleave', handleDragLeave);
-                dropZoneFiles.addEventListener('drop', handleDrop);
+            const dropZone = document.getElementById('dropZone');
+            if (dropZone) { 
+                dropZone.addEventListener('click', () => document.getElementById('fileInput').click());
+                dropZone.addEventListener('dragover', handleDragOver);
+                dropZone.addEventListener('dragleave', handleDragLeave);
+                dropZone.addEventListener('drop', handleDrop);
             }
-            const dropZoneFolders = document.getElementById('dropZoneFolders'); 
-            if (dropZoneFolders) {
-                dropZoneFolders.addEventListener('dragover', handleDragOver);
-                dropZoneFolders.addEventListener('dragleave', handleDragLeave);
-                // dropZoneFolders.addEventListener('drop', handleDropInFolder); 
-            }
+
 
             document.getElementById('fileSearch').addEventListener('input', searchFiles);
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => filterFiles(e.target.getAttribute('data-filter')));
+                btn.addEventListener('click', (e) => {
+                    const filter = e.target.getAttribute('data-filter');
+                    filterFiles(filter);
+                });
             });
+
             document.getElementById('noteContent').addEventListener('input', autoSaveNote);
             document.getElementById('noteTitle').addEventListener('input', autoSaveNote);
+
             document.getElementById('summarizeNoteBtn').addEventListener('click', summarizeNoteWithGemini);
             document.getElementById('continueWritingBtn').addEventListener('click', continueWritingWithGemini);
             document.getElementById('suggestEventDetailsBtn').addEventListener('click', suggestEventDetailsWithGemini);
-            document.getElementById('dailyTipBtn').addEventListener('click', showDailyTip);
-            
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('modal') && !e.target.classList.contains('custom-confirm-modal-overlay')) { 
-                    closeModal(e.target.id);
-                }
-            });
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    document.querySelectorAll('.modal.active:not(.custom-confirm-modal-overlay)').forEach(modal => closeModal(modal.id));
-                }
-            });
+            document.getElementById('dailyTipBtn').addEventListener('click', showDailyTip); 
         }
 
-        // --- Lógica de Subida y Previsualización de Archivos ---
-        function triggerFileInput() {
-            document.getElementById('fileInput').click();
-        }
-
-        function handleFileSelect(e) {
-            const selectedFile = e.target.files[0]; 
-            if (selectedFile) {
-                uploadAndPreviewSingleFile(selectedFile);
-            }
-            e.target.value = null; 
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.currentTarget.classList.add('dragover');
-        }
-
-        function handleDragLeave(e) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('dragover');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('dragover');
-            const droppedFiles = Array.from(e.dataTransfer.files);
-            
-            if (droppedFiles.length > 0) {
-                uploadAndPreviewSingleFile(droppedFiles[0]); 
-                if (droppedFiles.length > 1) {
-                    processMultipleFilesForStorage(droppedFiles.slice(1));
-                }
-            }
-            document.getElementById('fileInput').value = null; 
-        }
-
-        async function uploadAndPreviewSingleFile(file) {
-            if (!file) return;
-            if (!DatabaseManager.isConnected || !supabase) {
-                showNotification('Error: No hay conexión a Supabase. No se pueden subir archivos.', 'error');
-                showNotification("Verifica tus políticas RLS en Supabase para el bucket 'archivos'.", "warning", 7000);
+        async function summarizeNoteWithGemini() {
+            console.log("Intentando resumir nota...");
+            if (!currentNoteId) {
+                showNotification('Por favor, selecciona una nota para resumir.', 'warning');
+                console.log("Resumir: No hay nota seleccionada.");
                 return;
             }
+            const note = notes.find(n => n.id === currentNoteId);
+            if (!note || !note.content || !note.content.trim()) {
+                showNotification('La nota está vacía o no ha sido seleccionada correctamente.', 'warning');
+                console.log("Resumir: Nota vacía o no encontrada. Nota:", note);
+                return;
+            }
+            console.log("Resumir: Nota a resumir:", note.title, "Contenido:", note.content.substring(0,100) + "...");
 
-            console.log(`Iniciando subida y previsualización para: ${file.name}`);
-            GeminiAPIHelper.showLoading(); 
+            const prompt = `Resume el siguiente texto en español de forma concisa y clara, manteniendo las ideas principales:\n\n"${note.content}"\n\nResumen:`;
+            console.log("Resumir: Prompt para Gemini:", prompt);
+            const summary = await GeminiAPIHelper.generateText(prompt);
+            console.log("Resumir: Respuesta de Gemini (resumen):", summary);
 
-            try {
-                const pathInBucket = `public/${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
-                
-                console.log(`Subiendo a Supabase Storage: ${pathInBucket} con contentType: ${file.type}`);
-                const { data: uploadData, error: uploadError } = await supabase.storage
-                    .from('archivos') 
-                    .upload(pathInBucket, file, {
-                        cacheControl: '3600', upsert: false, contentType: file.type 
-                    });
 
-                if (uploadError) {
-                    console.error('Error subiendo a Supabase Storage:', uploadError);
-                     if (uploadError.message && uploadError.message.includes('violates row-level security policy')) {
-                         showNotification(`Error RLS al subir ${file.name}. Revisa las políticas de seguridad en Supabase.`, 'error', 10000); 
-                    } else {
-                        showNotification(`Error al subir ${file.name}: ${uploadError.message}`, 'error');
-                    }
-                    throw uploadError;
-                }
-                console.log('Archivo subido a Supabase Storage:', uploadData);
-
-                const { data: urlData } = supabase.storage.from('archivos').getPublicUrl(pathInBucket);
-                if (!urlData || !urlData.publicUrl) {
-                    console.error('No se pudo obtener la URL pública después de la subida.');
-                    showNotification(`Error al obtener URL pública para ${file.name}. Asegúrate que el bucket 'archivos' permita acceso público y las políticas RLS de SELECT estén correctas.`, 'error', 7000);
-                    throw new Error('No se pudo obtener la URL pública del archivo.');
-                }
-                const publicUrl = urlData.publicUrl;
-                console.log(`URL pública generada: ${publicUrl}`);
-
-                const fileMetadata = {
-                    file_name: file.name, size: file.size, type: file.type, url: publicUrl,
+            if (summary) {
+                const summaryTitle = `Resumen de: ${note.title}`;
+                const newNoteData = {
+                    title: summaryTitle,
+                    content: summary,
+                    pinned: false,
                 };
-                const createdFileInDB = await DatabaseManager.create('files', fileMetadata);
-                if (!createdFileInDB || !createdFileInDB.id) {
-                    console.error('Error guardando metadatos del archivo en la base de datos.');
-                    throw new Error('Error al guardar información del archivo en la base de datos.');
-                }
-                console.log('Metadatos del archivo guardados en la base de datos:', createdFileInDB);
-
-                const newFileObjectForUI = {
-                    id: createdFileInDB.id, file_name: createdFileInDB.file_name,
-                    size: createdFileInDB.size, type: createdFileInDB.type, 
-                    url: createdFileInDB.url,
-                    uploaded: new Date(createdFileInDB.uploaded_at || createdFileInDB.created_at),
-                };
-                files.unshift(newFileObjectForUI); 
-                renderFiles(); 
-                openFilePreviewModal(newFileObjectForUI);
-                showNotification(`Archivo "${file.name}" subido y listo para previsualizar.`, 'success');
-            } catch (error) {
-                console.error(`Error en uploadAndPreviewSingleFile para ${file.name}:`, error);
-            } finally {
-                GeminiAPIHelper.hideLoading();
-            }
-        }
-
-        async function processMultipleFilesForStorage(fileList) {
-            let filesProcessedCount = 0;
-            if (!fileList || fileList.length === 0) return;
-            if (!DatabaseManager.isConnected || !supabase) {
-                showNotification('Error: No hay conexión a Supabase. No se pueden subir archivos adicionales.', 'error');
-                return;
-            }
-            showNotification(`Procesando ${fileList.length} archivo(s) adicionales...`, 'info');
-            for (const file of fileList) {
-                console.log(`Procesando archivo adicional para almacenamiento: ${file.name}`);
-                try {
-                    const pathInBucket = `public/${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
-                    const { error: uploadError } = await supabase.storage
-                        .from('archivos').upload(pathInBucket, file, { contentType: file.type });
-                    if (uploadError) throw uploadError;
-                    const { data: urlData } = supabase.storage.from('archivos').getPublicUrl(pathInBucket);
-                    if (!urlData?.publicUrl) throw new Error('No se pudo obtener URL pública para archivo adicional.');
-                    const createdFileInDB = await DatabaseManager.create('files', {
-                        file_name: file.name, size: file.size, type: file.type, url: urlData.publicUrl,
-                    });
-                    if (createdFileInDB) {
-                        files.unshift({ ...createdFileInDB, id: createdFileInDB.id, uploaded: new Date(createdFileInDB.uploaded_at || createdFileInDB.created_at) });
-                        filesProcessedCount++;
-                    }
-                } catch (error) {
-                    console.error(`Error procesando archivo adicional ${file.name}:`, error);
-                    showNotification(`Error con archivo adicional ${file.name}: ${error.message}`, 'error');
-                }
-            }
-            renderFiles(); 
-            if (filesProcessedCount > 0) {
-                showNotification(`${filesProcessedCount} archivo(s) adicionales subidos.`, 'success');
-            }
-        }
-
-        // --- Modal de Previsualización de Archivos (ACTUALIZADO CON PDF.js) ---
-        function openFilePreviewModal(fileObject) {
-            console.log("Abriendo previsualización para:", fileObject); 
-
-            const modal = document.getElementById('filePreviewModal');
-            const titleElement = document.getElementById('filePreviewTitle');
-            const imgElement = document.getElementById('filePreviewImage');
-            const videoElement = document.getElementById('filePreviewVideo');
-            const audioElement = document.getElementById('filePreviewAudio');
-            const pdfJsViewer = document.getElementById('filePreviewPdfJsViewer'); 
-            const textElement = document.getElementById('filePreviewText');
-            const fallbackElement = document.getElementById('filePreviewFallback');
-            const downloadLink = document.getElementById('fileDownloadLink');
-
-            [imgElement, videoElement, audioElement, pdfJsViewer, textElement, fallbackElement].forEach(el => {
-                if (el) { 
-                    el.style.display = 'none';
-                    if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') el.pause();
-                    if (el.tagName === 'IMG' || el.tagName === 'VIDEO' || el.tagName === 'AUDIO' || el.tagName === 'IFRAME') {
-                        el.removeAttribute('src'); 
-                    }
-                    if (el.tagName === 'PRE') el.textContent = '';
-                }
-            });
-
-            if (!fileObject || !fileObject.url || typeof fileObject.url !== 'string') {
-                console.error("Objeto de archivo inválido o URL faltante:", fileObject);
-                fallbackElement.textContent = 'No se pudo cargar el archivo: URL inválida o faltante.';
-                fallbackElement.style.display = 'block';
-                downloadLink.style.display = 'none';
-                openModal('filePreviewModal');
-                return;
-            }
-            
-            titleElement.textContent = fileObject.file_name || 'Vista Previa de Archivo';
-            let previewSrc = fileObject.url.replace(/^(https?:\/\/[^/]+)\/\//, '$1/');
-            console.log("URL para previsualización (limpia):", previewSrc);
-            console.log("Tipo de archivo (MIME type):", fileObject.type);
-
-            downloadLink.href = previewSrc;
-            downloadLink.download = fileObject.file_name || 'archivo_descargado';
-            downloadLink.style.display = 'inline-block';
-
-            let anElementWasSetToDisplay = false;
-            const fileType = fileObject.type || '';
-
-            if (fileType.startsWith('image/')) {
-                imgElement.src = previewSrc; imgElement.style.display = 'block'; anElementWasSetToDisplay = true;
-            } else if (fileType.startsWith('video/')) {
-                videoElement.src = previewSrc; videoElement.style.display = 'block'; videoElement.load(); anElementWasSetToDisplay = true;
-            } else if (fileType.startsWith('audio/')) {
-                audioElement.src = previewSrc; audioElement.style.display = 'block'; audioElement.load(); anElementWasSetToDisplay = true;
-            } else if (fileType.includes('pdf')) {
-                console.log("Es un PDF, intentando mostrar con PDF.js en <iframe>. URL:", previewSrc);
-                if (pdfJsViewer) {
-                    const pdfJsUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(previewSrc)}`;
-                    pdfJsViewer.src = pdfJsUrl;
-                    pdfJsViewer.style.display = 'block';
-                    anElementWasSetToDisplay = true;
+                console.log("Resumir: Creando nueva nota con resumen:", newNoteData);
+                const createdSummaryNote = await DatabaseManager.create('notes', newNoteData);
+                if (createdSummaryNote) {
+                    console.log("Resumir: Nota de resumen creada en DB:", createdSummaryNote);
+                    const fullSummaryNote = {...createdSummaryNote, id: createdSummaryNote.id, created: new Date(createdSummaryNote.created_at), updated: new Date(createdSummaryNote.updated_at) };
+                    notes.unshift(fullSummaryNote); 
+                    currentNoteId = fullSummaryNote.id; 
+                    renderNotes();
+                    selectNote(fullSummaryNote.id);
+                    showNotification('Resumen generado y guardado como nueva nota.', 'success');
                 } else {
-                    console.error("Elemento 'filePreviewPdfJsViewer' no encontrado en el DOM.");
-                    fallbackElement.textContent = 'Error interno: Visor de PDF no encontrado.';
-                    fallbackElement.style.display = 'block';
+                    console.error("Resumir: Falló la creación de la nota de resumen en la DB.");
                 }
-            } else if (fileType.startsWith('text/')) {
-                 fetch(previewSrc)
-                    .then(response => {
-                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                        return response.text();
-                    })
-                    .then(text => {
-                        textElement.textContent = text; textElement.style.display = 'block'; anElementWasSetToDisplay = true;
-                    })
-                    .catch(error => {
-                        console.error("Error cargando archivo de texto desde URL:", error);
-                        fallbackElement.textContent = `No se pudo cargar previsualización de texto. (Error: ${error.message})`;
-                        fallbackElement.style.display = 'block';
-                    });
             } else {
-                fallbackElement.textContent = `No hay previsualización directa para este tipo de archivo (${fileType || 'desconocido'}). Intenta descargarlo.`;
-                fallbackElement.style.display = 'block';
+                 console.log("Resumir: Gemini no devolvió un resumen.");
             }
-            
-            if (!anElementWasSetToDisplay && fallbackElement.style.display === 'none') {
-                 fallbackElement.textContent = `No se pudo determinar un visor para este archivo (URL: ${previewSrc}, Tipo: ${fileType || 'desconocido'}).`;
-                 fallbackElement.style.display = 'block';
-            }
-            openModal('filePreviewModal');
         }
 
-        // --- Resto de funciones UI (showSection, themes, languages, modals, notifications, etc.) ---
+        async function continueWritingWithGemini() {
+            console.log("Intentando continuar escritura...");
+            if (!currentNoteId) {
+                showNotification('Por favor, selecciona una nota para continuar.', 'warning');
+                 console.log("Continuar: No hay nota seleccionada.");
+                return;
+            }
+            const note = notes.find(n => n.id === currentNoteId);
+            if (!note) {
+                showNotification('La nota no ha sido seleccionada correctamente.', 'warning');
+                console.log("Continuar: Nota no encontrada.");
+                return;
+            }
+            const currentContent = document.getElementById('noteContent').value; 
+            console.log("Continuar: Contenido actual para continuar:", currentContent.substring(0,100) + "...");
+
+
+            const prompt = `Continúa escribiendo el siguiente texto en español de forma natural y coherente, añadiendo uno o dos párrafos que fluyan bien con el contenido existente. Evita repetir frases introductorias como "Continuación:". Simplemente añade el nuevo texto.\n\nTexto existente:\n"${currentContent}"\n\nTexto adicional:`;
+            console.log("Continuar: Prompt para Gemini:", prompt);
+            const continuation = await GeminiAPIHelper.generateText(prompt);
+            console.log("Continuar: Respuesta de Gemini (continuación):", continuation);
+
+            if (continuation) {
+                document.getElementById('noteContent').value += `\n\n${continuation.trim()}`;
+                console.log("Continuar: Contenido actualizado en textarea.");
+                await saveNote(false); 
+                showNotification('Texto continuado y añadido a la nota.', 'success');
+            } else {
+                console.log("Continuar: Gemini no devolvió una continuación.");
+            }
+        }
+        async function suggestEventDetailsWithGemini() {
+            console.log("Intentando sugerir detalles del evento...");
+            const eventTitle = document.getElementById('eventTitleInput').value.trim();
+            if (!eventTitle) {
+                showNotification('Por favor, ingresa un título para el evento.', 'warning');
+                console.log("Sugerir Detalles Evento: Título vacío.");
+                return;
+            }
+            console.log("Sugerir Detalles Evento: Título:", eventTitle);
+
+            const prompt = `Para un evento titulado "${eventTitle}", sugiere una descripción atractiva y concisa en español. La descripción no debe exceder las 150 palabras.`;
+            console.log("Sugerir Detalles Evento: Prompt para Gemini:", prompt);
+            const suggestion = await GeminiAPIHelper.generateText(prompt);
+            console.log("Sugerir Detalles Evento: Respuesta de Gemini:", suggestion);
+
+            if (suggestion) {
+                document.getElementById('eventDescriptionInput').value = suggestion.trim();
+                showNotification('Descripción sugerida y añadida.', 'success');
+            } else {
+                console.log("Sugerir Detalles Evento: Gemini no devolvió una sugerencia.");
+            }
+        }
+
+        const dailyPhrases = [
+            "La sonrisa es el idioma universal de las almas inteligentes.",
+            "El único modo de hacer un gran trabajo es amar lo que haces. - Steve Jobs",
+            "La vida es como una bicicleta, para mantener el equilibrio debes seguir adelante. - Albert Einstein",
+            "Cree en ti mismo y todo será posible.",
+            "El éxito es la suma de pequeños esfuerzos repetidos día tras día. - Robert Collier",
+            "No cuentes los días, haz que los días cuenten. - Muhammad Ali",
+            "La mejor manera de predecir el futuro es crearlo. - Peter Drucker",
+            "El optimismo es la fe que conduce al logro; nada puede realizarse sin esperanza. - Helen Keller",
+            "Cada día es una nueva oportunidad para cambiar tu vida.",
+            "La felicidad no es algo hecho. Proviene de tus propias acciones. - Dalai Lama"
+        ];
+
+        function showDailyTip() { 
+            console.log("Mostrando consejo del día (local)...");
+            const tipModalContent = document.getElementById('tipModalContent');
+            
+            const randomIndex = Math.floor(Math.random() * dailyPhrases.length);
+            const tip = dailyPhrases[randomIndex];
+            
+            tipModalContent.textContent = tip;
+            openModal('tipModal');
+            console.log("Consejo del Día (local):", tip);
+        }
+
+
         function showSection(sectionName) {
-            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
             const activeSection = document.getElementById(sectionName);
             if (activeSection) activeSection.classList.add('active');
-            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-            const activeLink = document.querySelector(`.nav-link[data-section="${sectionName}"]`);
+
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
             if (activeLink) activeLink.classList.add('active');
+
             currentSection = sectionName;
-            localStorage.setItem('lastSection', sectionName);
-            if (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('show')) {
-                toggleSidebar();
+            localStorage.setItem('lastSection', sectionName); 
+
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('show') && window.innerWidth <= 768) { 
+                toggleSidebar(); 
             }
         }
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
-            sidebar.classList.toggle('show'); 
-            mainContent.classList.toggle('expanded', !sidebar.classList.contains('show') || sidebar.classList.contains('collapsed'));
+            sidebar.classList.toggle('show');
+            mainContent.classList.toggle('expanded', !sidebar.classList.contains('show')); 
         }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(currentTheme);
+        }
+
         function setTheme(theme) {
             document.body.setAttribute('data-theme', theme);
             currentTheme = theme;
             const themeIcon = document.querySelector('#themeToggle i');
             const darkModeSwitch = document.getElementById('darkModeToggle');
+
             if (theme === 'dark') {
-                themeIcon.className = 'fas fa-sun'; 
+                themeIcon.className = 'fas fa-sun';
                 if (darkModeSwitch) darkModeSwitch.classList.add('active');
             } else {
-                themeIcon.className = 'fas fa-moon'; 
+                themeIcon.className = 'fas fa-moon';
                 if (darkModeSwitch) darkModeSwitch.classList.remove('active');
             }
             localStorage.setItem('theme', theme);
         }
-        function toggleTheme() { setTheme(currentTheme === 'dark' ? 'light' : 'dark'); }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'es' ? 'en' : 'es';
+            setLanguage(currentLanguage);
+        }
+
         function setLanguage(lang) {
             currentLanguage = lang;
             document.getElementById('langToggle').innerHTML = `<i class="fas fa-globe"></i> ${lang.toUpperCase()}`;
             document.getElementById('languageSelect').value = lang;
             localStorage.setItem('language', lang);
-            console.log(`Idioma cambiado a: ${lang}`);
         }
-        function toggleLanguage() { setLanguage(currentLanguage === 'es' ? 'en' : 'es');}
-        function changeLanguage(e) { setLanguage(e.target.value); }
+
+        function changeLanguage(e) {
+            setLanguage(e.target.value);
+        }
+
         function changeFontSize(e) {
             const size = e.target.value;
             document.body.style.fontSize = size === 'small' ? '14px' : size === 'large' ? '18px' : '16px';
             localStorage.setItem('fontSize', size);
         }
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.remove('active');
-                if (modalId === 'filePreviewModal') {
-                    const videoElement = document.getElementById('filePreviewVideo');
-                    const audioElement = document.getElementById('filePreviewAudio');
-                    const pdfViewer = document.getElementById('filePreviewPdfJsViewer');
-                    if (videoElement) { videoElement.pause(); videoElement.removeAttribute('src'); }
-                    if (audioElement) { audioElement.pause(); audioElement.removeAttribute('src'); }
-                    if (pdfViewer) { pdfViewer.removeAttribute('src'); } 
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedFontSize = localStorage.getItem('fontSize');
+            if (savedFontSize) {
+                document.body.style.fontSize = savedFontSize === 'small' ? '14px' : savedFontSize === 'large' ? '18px' : '16px';
+                document.getElementById('fontSizeSelect').value = savedFontSize;
+            }
+        });
+
+
+        async function createFolder() {
+            document.getElementById('folderModal').classList.add('active');
+        }
+
+        async function confirmCreateFolder() {
+            const name = document.getElementById('folderNameInput').value.trim();
+            if (name) {
+                const newFolderData = { name: name }; 
+                const createdFolder = await DatabaseManager.create('folders', newFolderData);
+                if (createdFolder) {
+                    folders.push({...createdFolder, id: createdFolder.id, name: createdFolder.name, created: new Date(createdFolder.created_at)});
+                    renderFolders();
+                    closeModal('folderModal');
+                    document.getElementById('folderNameInput').value = '';
+                    showNotification('Carpeta creada exitosamente.', 'success');
                 }
-            }
-        }
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) modal.classList.add('active');
-        }
-        function showNotification(message, type = 'info', duration = 3000) {
-            const notification = document.createElement('div');
-            notification.className = `notification slide-in ${type}`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            setTimeout(() => {
-                notification.classList.remove('slide-in');
-                notification.classList.add('slide-out');
-                setTimeout(() => notification.remove(), 500);
-            }, duration);
-        }
-        function updateDbStatus(connected, message) {
-            const dbStatusDiv = document.getElementById('dbStatus');
-            const dbConnectionStatusSpan = document.getElementById('dbConnectionStatus'); 
-            const iconClass = connected ? 'fa-check-circle' : 'fa-exclamation-triangle';
-            const color = connected ? 'var(--success-color)' : 'var(--warning-color)';
-            if (dbStatusDiv) {
-                dbStatusDiv.className = `db-status ${connected ? 'connected' : ''}`;
-                dbStatusDiv.innerHTML = `<div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas ${connected ? 'fa-database' : 'fa-exclamation-triangle'}"></i><span>${message}</span></div>`;
-                dbStatusDiv.querySelector('i').style.color = connected ? 'var(--success-color)' : 'var(--warning-color)';
-            }
-            if (dbConnectionStatusSpan) {
-                dbConnectionStatusSpan.innerHTML = `<i class="fas ${iconClass}" style="color: ${color};"></i> ${message}`;
-                dbConnectionStatusSpan.style.color = color;
             }
         }
 
-        // --- Funciones CRUD y renderizado para Files, Folders, Notes, Calendar ---
+        function renderFolders() {
+            const grid = document.getElementById('foldersGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            folders.sort((a,b) => new Date(b.created) - new Date(a.created)); 
+
+            folders.forEach(folder => {
+                const folderElement = document.createElement('div');
+                folderElement.className = 'folder-item';
+                folderElement.innerHTML = `
+                    <div class="folder-icon"><i class="fas fa-folder"></i></div>
+                    <div class="folder-name">${folder.name}</div>
+                    <div class="folder-stats">0 archivos</div>
+                `;
+                folderElement.addEventListener('click', () => openFolder(folder.id));
+                grid.appendChild(folderElement);
+            });
+        }
+
+        function openFolder(folderId) {
+            const folder = folders.find(f => f.id === folderId);
+            if (folder) {
+                alert(`Abriendo carpeta: ${folder.name} (ID: ${folder.id}).`);
+            }
+        }
+
+        function uploadFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileSelect(e) {
+            const selectedFiles = Array.from(e.target.files);
+            if (selectedFiles.length > 0) {
+                processFiles(selectedFiles);
+            }
+            e.target.value = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            const dropZone = document.getElementById('dropZone');
+            if (dropZone) dropZone.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            const dropZone = document.getElementById('dropZone');
+            if (dropZone) dropZone.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropZone = document.getElementById('dropZone');
+            if (dropZone) dropZone.classList.remove('dragover');
+            const droppedFiles = Array.from(e.dataTransfer.files);
+            if (droppedFiles.length > 0) {
+                processFiles(droppedFiles);
+            }
+        }
+
+        async function processFiles(fileList) {
+            if (!DatabaseManager.isConnected || !supabase) {
+                showNotification('Error: No hay conexión a Supabase. No se pueden subir archivos.', 'error');
+                showNotification("Verifica tus políticas RLS en Supabase para el bucket 'archivos' (ver comentarios en el código JS).", "warning", 7000);
+                return;
+            }
+
+            let filesProcessedCount = 0;
+            let previewedFile = false; 
+
+            for (const file of fileList) {
+                showNotification(`Subiendo ${file.name}...`, 'info');
+                const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-\s]/g, '').replace(/\s+/g, '_');
+                const filePath = `public/${Date.now()}-${sanitizedFileName}`; 
+
+                try {
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('archivos') 
+                        .upload(filePath, file, {
+                            cacheControl: '3600', 
+                            upsert: false 
+                        });
+
+                    if (uploadError) {
+                        console.error('Error subiendo archivo a Supabase Storage:', uploadError);
+                        if (uploadError.message && uploadError.message.includes('violates row-level security policy')) {
+                             showNotification(`Error RLS al subir ${file.name}: ${uploadError.message}. Revisa las políticas de seguridad en Supabase (ver comentarios en el código JS).`, 'error', 10000); 
+                        } else {
+                            showNotification(`Error al subir ${file.name}: ${uploadError.message}`, 'error');
+                        }
+                        continue; 
+                    }
+
+                    const { data: urlData } = supabase.storage
+                        .from('archivos')
+                        .getPublicUrl(uploadData.path);
+
+                    if (!urlData || !urlData.publicUrl) {
+                        console.error('Error obteniendo URL pública para:', uploadData.path, urlData);
+                        showNotification(`Error al obtener URL pública para ${file.name}. Asegúrate que el bucket 'archivos' permita acceso público y las políticas RLS de SELECT estén correctas.`, 'error', 7000);
+                        continue;
+                    }
+                    const publicUrl = urlData.publicUrl;
+                    console.log(`Archivo '${file.name}' subido a Supabase. URL pública: ${publicUrl}`);
+
+                    const fileMetadata = {
+                        file_name: file.name, 
+                        size: file.size,
+                        type: file.type,
+                        url: publicUrl,
+                    };
+
+                    const createdFileInDB = await DatabaseManager.create('files', fileMetadata);
+
+                    if (createdFileInDB) {
+                        const fullFileObject = {
+                            ...createdFileInDB, 
+                            uploaded: new Date(createdFileInDB.uploaded_at || createdFileInDB.created_at), 
+                            // No guardamos el objeto 'file' aquí ya que se subió a Storage
+                        };
+                        files.unshift(fullFileObject); 
+                        filesProcessedCount++;
+
+                        if (!previewedFile) { 
+                            openFilePreviewModal(fullFileObject);
+                            previewedFile = true;
+                        }
+                    } else {
+                        showNotification(`Error al guardar metadatos de ${file.name} en la base de datos.`, 'error');
+                    }
+
+                } catch (storageError) {
+                    console.error('Excepción durante la operación con Supabase Storage:', storageError);
+                    showNotification(`Error con Storage para ${file.name}: ${storageError.message}`, 'error');
+                    continue; 
+                }
+            }
+
+            renderFiles(); 
+            if (filesProcessedCount > 0) {
+                showNotification(`${filesProcessedCount} archivo(s) subido(s) y guardado(s) exitosamente.`, 'success');
+            } else if (fileList.length > 0) {
+                showNotification(`No se pudieron procesar los archivos seleccionados. Revisa la consola para más detalles y verifica tus políticas RLS en Supabase.`, 'warning', 7000);
+            }
+        }
+
+
         function renderFiles() {
             const grid = document.getElementById('filesGrid');
             if(!grid) return;
-            grid.innerHTML = ''; 
+            grid.innerHTML = '';
+
             const searchTerm = document.getElementById('fileSearch').value.toLowerCase();
             const activeFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
-            const filteredAndSortedFiles = files.filter(file => {
+
+            const filteredFiles = files.filter(file => {
                 const nameMatch = file.file_name ? file.file_name.toLowerCase().includes(searchTerm) : false;
                 if (!nameMatch) return false;
+
                 if (activeFilter === 'all') return true;
-                if (file.type) { 
-                    if (activeFilter === 'image') return file.type.startsWith('image/');
-                    if (activeFilter === 'document') return file.type.includes('pdf') || file.type.includes('word') || file.type.includes('document') || file.type.includes('excel') || file.type.includes('spreadsheet') || file.type.includes('text');
-                    if (activeFilter === 'video') return file.type.startsWith('video/');
-                    if (activeFilter === 'audio') return file.type.startsWith('audio/');
-                }
+                if (activeFilter === 'image') return file.type && file.type.startsWith('image/');
+                if (activeFilter === 'document') return file.type && (file.type.includes('pdf') || file.type.includes('word') || file.type.includes('document') || file.type.includes('excel') || file.type.includes('spreadsheet') || file.type.includes('text'));
+                if (activeFilter === 'video') return file.type && file.type.startsWith('video/');
+                if (activeFilter === 'audio') return file.type && file.type.startsWith('audio/');
                 return false;
-            }).sort((a,b) => new Date(b.uploaded || b.created_at) - new Date(a.uploaded || a.created_at)); 
-            if (filteredAndSortedFiles.length === 0) {
-                grid.innerHTML = `<p style="color: var(--text-secondary); grid-column: 1 / -1; text-align: center; padding: 1rem;">No hay archivos que coincidan.</p>`;
+            }).sort((a,b) => new Date(b.uploaded) - new Date(a.uploaded)); 
+
+
+            if (filteredFiles.length === 0) {
+                grid.innerHTML = `<p style="color: var(--text-secondary); grid-column: 1 / -1; text-align: center;">No hay archivos que coincidan.</p>`;
                 return;
             }
-            filteredAndSortedFiles.forEach(file => {
+
+            filteredFiles.forEach(file => {
                 const fileElement = document.createElement('div');
                 fileElement.className = 'file-item';
                 const icon = getFileIcon(file.type);
@@ -2050,249 +2267,676 @@
                 fileElement.innerHTML = `
                     <div class="file-icon" style="color: ${getFileColor(file.type)}"><i class="${icon}"></i></div>
                     <div class="file-name" title="${file.file_name}">${file.file_name}</div>
-                    <div class="file-size">${size}</div>
-                    <i class="fas fa-trash delete-file-icon" title="Eliminar archivo"></i>
-                `;
+                    <div class.file-size">${size}</div>
+                    <i class="fas fa-trash delete-file-icon" title="Eliminar archivo"></i>`;
                 fileElement.querySelector('.delete-file-icon').addEventListener('click', (e) => {
                     e.stopPropagation(); 
                     deleteFileConfirmation(file.id, file.file_name, file.url);
                 });
-                fileElement.addEventListener('click', () => openFilePreviewModal(file));
+                fileElement.addEventListener('click', () => openFilePreviewModal(file)); 
                 grid.appendChild(fileElement);
             });
         }
-        function getFileIcon(type) { 
+
+        function getFileIcon(type) {
             if (!type) return 'fas fa-file';
             if (type.startsWith('image/')) return 'fas fa-file-image';
             if (type.startsWith('video/')) return 'fas fa-file-video';
             if (type.startsWith('audio/')) return 'fas fa-file-audio';
-            if (type.includes('pdf')) return 'fas fa-file-pdf';
+            if (type.includes('pdf')) return 'fas fa-file-pdf'; 
             if (type.includes('word') || type.includes('document')) return 'fas fa-file-word';
             if (type.includes('excel') || type.includes('spreadsheet')) return 'fas fa-file-excel';
+            if (type.includes('presentation') || type.includes('powerpoint')) return 'fas fa-file-powerpoint';
+            if (type.includes('zip') || type.includes('archive')) return 'fas fa-file-archive';
             return 'fas fa-file';
         }
-        function getFileColor(type) { 
-            if (!type) return 'var(--accent-color)';
-            if (type.startsWith('image/')) return '#ff6b6b';
-            if (type.startsWith('video/')) return '#4ecdc4';
-            if (type.startsWith('audio/')) return '#45b7d1';
-            if (type.includes('pdf')) return '#ff4757';
-            if (type.includes('word')) return '#2e86de';
-            if (type.includes('excel')) return '#1dd1a1';
-            return 'var(--accent-color)';
+
+        function getFileColor(type) {
+            if (!type) return '#6c5ce7'; 
+            if (type.startsWith('image/')) return '#ff6b6b'; 
+            if (type.startsWith('video/')) return '#4ecdc4'; 
+            if (type.startsWith('audio/')) return '#45b7d1'; 
+            if (type.includes('pdf')) return '#ff4757'; 
+            if (type.includes('word')) return '#2e86de'; 
+            if (type.includes('excel')) return '#1dd1a1'; 
+            if (type.includes('presentation')) return '#f39c12'; 
+            return '#6c5ce7'; 
         }
-        function formatFileSize(bytes) { 
-            if (bytes === undefined || bytes === null || isNaN(bytes) || bytes === 0) return '0 Bytes';
+
+
+        function formatFileSize(bytes) {
+            if (bytes === 0 || !bytes) return '0 Bytes';
             const k = 1024;
             const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
+
         function searchFiles() { renderFiles(); }
         function filterFiles(filter) {
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.querySelector(`.filter-btn[data-filter="${filter}"]`);
-            if (activeBtn) activeBtn.classList.add('active');
+            document.querySelector(`.filter-btn[data-filter="${filter}"]`).classList.add('active');
             renderFiles();
         }
+
         async function deleteFileConfirmation(fileId, fileName, fileUrl) {
-            showCustomConfirm(`¿Eliminar "${fileName}"? También se intentará eliminar del almacenamiento.`, async () => {
-                let storagePath = null;
+            showCustomConfirm(`¿Estás seguro de eliminar el archivo "${fileName}"? Esta acción también intentará eliminarlo del almacenamiento.`, async () => {
+                console.log(`Intentando eliminar archivo: ID=${fileId}, Nombre=${fileName}, URL=${fileUrl}`);
+                let deletedFromStorage = false;
+
                 if (fileUrl && typeof fileUrl === 'string' && supabase) {
                     try {
                         const urlObj = new URL(fileUrl);
-                        const pathParts = urlObj.pathname.split(`/storage/v1/object/public/archivos/`); 
-                        if (pathParts.length > 1) {
-                            storagePath = decodeURIComponent(pathParts[1]);
+                        const pathPrefix = `/storage/v1/object/public/archivos/`; 
+                        let storagePath = urlObj.pathname.substring(urlObj.pathname.indexOf(pathPrefix) + pathPrefix.length);
+                        
+                        storagePath = decodeURIComponent(storagePath);
+
+                        if (storagePath) {
+                            console.log(`Intentando eliminar de Supabase Storage, bucket 'archivos', path: '${storagePath}'`);
                             const { error: storageError } = await supabase.storage.from('archivos').remove([storagePath]);
-                            if (storageError) console.error('Error eliminando de Storage:', storageError);
-                            else console.log('Archivo eliminado de Storage.');
+                            if (storageError) {
+                                console.error('Error eliminando archivo de Supabase Storage:', storageError);
+                                showNotification(`Error al eliminar '${fileName}' del almacenamiento: ${storageError.message}`, 'error');
+                            } else {
+                                console.log(`Archivo '${fileName}' eliminado de Supabase Storage exitosamente.`);
+                                deletedFromStorage = true;
+                            }
+                        } else {
+                             console.warn(`No se pudo determinar el path del archivo en Storage desde la URL: ${fileUrl}`);
                         }
-                    } catch (e) { console.error("Error al procesar URL/eliminar de Storage:", e); }
+                    } catch (e) {
+                         console.error("Error al parsear la URL del archivo o al interactuar con Storage:", e);
+                         showNotification(`Excepción al procesar eliminación de Storage para '${fileName}': ${e.message}`, 'error');
+                    }
                 }
+
                 const dbSuccess = await DatabaseManager.delete('files', fileId);
                 if (dbSuccess) {
                     files = files.filter(f => f.id !== fileId);
-                    renderFiles(); 
-                    showNotification(`"${fileName}" eliminado.`, 'success');
+                    renderFiles();
+                    if (deletedFromStorage || !fileUrl) { 
+                        showNotification(`Archivo "${fileName}" eliminado exitosamente.`, 'success');
+                    } else { 
+                         showNotification(`Archivo "${fileName}" eliminado de la base de datos. Puede que siga en el almacenamiento.`, 'warning');
+                    }
                 } else {
-                    showNotification(`Error al eliminar "${fileName}" de la DB.`, 'error');
+                     if (!fileUrl || (fileUrl && deletedFromStorage)) { 
+                        showNotification(`Error al eliminar "${fileName}" de la base de datos.`, 'error');
+                     }
                 }
             });
         }
-        function showCustomConfirm(message, onConfirm, onCancel) {
-            const existingModal = document.querySelector('.custom-confirm-modal-overlay');
-            if (existingModal) existingModal.remove();
-            const overlay = document.createElement('div');
-            overlay.className = 'modal active custom-confirm-modal-overlay'; 
-            overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 2001;";
-            const modalContent = document.createElement('div');
-            modalContent.className = 'modal-content'; 
-            modalContent.style.maxWidth = '400px'; 
-            modalContent.innerHTML = `
-                <p style="margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">${message}</p>
-                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
-                    <button class="btn btn-secondary" id="customConfirmCancelBtnModal">Cancelar</button>
-                    <button class="btn" id="customConfirmOkBtnModal" style="background-color: var(--danger-color);">Confirmar</button>
-                </div>`; 
-            overlay.appendChild(modalContent);
-            document.body.appendChild(overlay);
-            document.getElementById('customConfirmOkBtnModal').onclick = () => { if (onConfirm) onConfirm(); overlay.remove(); };
-            document.getElementById('customConfirmCancelBtnModal').onclick = () => { if (onCancel) onCancel(); overlay.remove(); };
+
+        function cleanUrl(url) {
+            if (typeof url !== 'string') return url;
+            let cleaned = url.replace(/^(https?|ftp):[\/]{2,}/i, '$1://'); 
+            cleaned = cleaned.replace(/([^:])\/\/+/g, '$1/'); 
+            return cleaned;
         }
-        
-        function createFolder() { openModal('folderModal'); }
-        async function confirmCreateFolder() { 
+
+        function openFilePreviewModal(fileObject) {
+            const modal = document.getElementById('filePreviewModal');
+            const titleElement = document.getElementById('filePreviewTitle');
+            const imgElement = document.getElementById('filePreviewImage');
+            const videoElement = document.getElementById('filePreviewVideo');
+            const audioElement = document.getElementById('filePreviewAudio');
+            const iframeElement = document.getElementById('filePreviewIframe'); 
+            const textElement = document.getElementById('filePreviewText');
+            const fallbackElement = document.getElementById('filePreviewFallback');
+            const downloadLink = document.getElementById('fileDownloadLink');
+
+            [imgElement, videoElement, audioElement, iframeElement, textElement, fallbackElement].forEach(el => {
+                el.style.display = 'none';
+                if (el.tagName === 'IMG' || el.tagName === 'VIDEO' || el.tagName === 'AUDIO' || el.tagName === 'IFRAME') {
+                    el.removeAttribute('src'); 
+                }
+                if (el.tagName === 'PRE') {
+                    el.textContent = '';
+                }
+            });
+
+            titleElement.textContent = fileObject.file_name || 'Vista Previa de Archivo';
+            let previewSrc = null;
+            let canDownload = false;
+
+            if (fileObject.url && typeof fileObject.url === 'string') {
+                previewSrc = cleanUrl(fileObject.url);
+                downloadLink.href = previewSrc;
+                downloadLink.download = fileObject.file_name || 'archivo';
+                downloadLink.style.display = 'inline-block';
+                canDownload = true;
+                console.log("File Preview: Using Supabase URL (cleaned):", previewSrc);
+            } else if (fileObject.file && fileObject.file instanceof File) { 
+                previewSrc = URL.createObjectURL(fileObject.file);
+                downloadLink.href = previewSrc;
+                downloadLink.download = fileObject.file_name || 'archivo';
+                downloadLink.style.display = 'inline-block';
+                canDownload = true;
+                console.log("File Preview: Using local Object URL.");
+            } else {
+                fallbackElement.textContent = 'No hay URL o archivo local disponible para previsualizar o descargar.';
+                fallbackElement.style.display = 'block';
+                downloadLink.style.display = 'none';
+                openModal('filePreviewModal');
+                return;
+            }
+
+            const fileType = fileObject.type || '';
+            console.log(`File Preview: Attempting to preview ${fileObject.file_name}, Type: ${fileType}, Source: ${previewSrc}`);
+
+            let previewed = false;
+            if (previewSrc) {
+                if (fileType.startsWith('image/')) {
+                    imgElement.src = previewSrc;
+                    imgElement.style.display = 'block';
+                    previewed = true;
+                } else if (fileType.startsWith('video/')) {
+                    videoElement.src = previewSrc;
+                    videoElement.style.display = 'block';
+                    videoElement.load();
+                    previewed = true;
+                } else if (fileType.startsWith('audio/')) {
+                    audioElement.src = previewSrc;
+                    audioElement.style.display = 'block';
+                    audioElement.load();
+                    previewed = true;
+                } else if (fileType.includes('pdf')) { 
+                    console.log("File Preview: PDF detected. Setting iframe source to:", `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(previewSrc)}`);
+                    iframeElement.src = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(previewSrc)}`;
+                    iframeElement.style.display = 'block';
+                    previewed = true;
+                } else if (fileType.startsWith('text/') && fileObject.file && !fileObject.url) { 
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        textElement.textContent = e.target.result;
+                        textElement.style.display = 'block';
+                    }
+                    reader.onerror = function() {
+                        fallbackElement.textContent = 'Error al leer el archivo de texto.';
+                        fallbackElement.style.display = 'block';
+                    }
+                    reader.readAsText(fileObject.file);
+                    previewed = true; 
+                }
+            }
+
+            if (!previewed) { 
+                 if (fileObject.url || (fileObject.file && fileObject.file instanceof File)) { 
+                    fallbackElement.textContent = `No hay previsualización directa disponible para este tipo de archivo (${fileType || 'desconocido'}). Puedes descargarlo.`;
+                } else { 
+                    fallbackElement.textContent = 'No se pudo determinar cómo previsualizar este archivo.';
+                }
+                fallbackElement.style.display = 'block';
+            }
+            
+            if (!canDownload) { 
+                downloadLink.style.display = 'none';
+            }
+
+            openModal('filePreviewModal');
+        }
+
+
+        // --- Gestión de Carpetas (Placeholder) ---
+        async function createFolder() {
+            document.getElementById('folderModal').classList.add('active');
+        }
+        async function confirmCreateFolder() {
             const name = document.getElementById('folderNameInput').value.trim();
-            if (!name) { showNotification("Nombre de carpeta vacío.", "warning"); return; }
-            const createdFolder = await DatabaseManager.create('folders', { name });
-            if (createdFolder) {
-                folders.push({ ...createdFolder, created: new Date(createdFolder.created_at) });
-                renderFolders(); closeModal('folderModal'); document.getElementById('folderNameInput').value = '';
-                showNotification('Carpeta creada.', 'success');
+            if (name) {
+                const newFolderData = { name: name };
+                const createdFolder = await DatabaseManager.create('folders', newFolderData);
+                if (createdFolder) {
+                    folders.push({...createdFolder, id: createdFolder.id, name: createdFolder.name, created: new Date(createdFolder.created_at)});
+                    renderFolders();
+                    closeModal('folderModal');
+                    document.getElementById('folderNameInput').value = '';
+                    showNotification('Carpeta creada exitosamente.', 'success');
+                }
             }
         }
-        function renderFolders() { 
-            const grid = document.getElementById('foldersGrid'); if (!grid) return; grid.innerHTML = '';
-            folders.sort((a, b) => new Date(b.created) - new Date(a.created));
-            if (folders.length === 0) { grid.innerHTML = `<p style="color: var(--text-secondary); text-align:center; padding:1rem;">No hay carpetas.</p>`; return; }
+        function renderFolders() {
+            const grid = document.getElementById('foldersGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            folders.sort((a,b) => new Date(b.created) - new Date(a.created));
             folders.forEach(folder => {
-                const item = document.createElement('div'); item.className = 'folder-item';
-                item.innerHTML = `<div class="folder-icon"><i class="fas fa-folder"></i></div><div class="folder-name">${folder.name}</div><div class="folder-stats">0 archivos</div>`;
-                item.addEventListener('click', () => openFolder(folder.id)); grid.appendChild(item);
+                const folderElement = document.createElement('div');
+                folderElement.className = 'folder-item';
+                folderElement.innerHTML = `
+                    <div class="folder-icon"><i class="fas fa-folder"></i></div>
+                    <div class="folder-name">${folder.name}</div>
+                    <div class="folder-stats">0 archivos</div> `;
+                folderElement.addEventListener('click', () => openFolder(folder.id));
+                grid.appendChild(folderElement);
             });
         }
-        function openFolder(folderId) { console.log("Abrir carpeta (no implementado):", folderId); showNotification("Funcionalidad de abrir carpeta no implementada.", "info");}
+        function openFolder(folderId) {
+            const folder = folders.find(f => f.id === folderId);
+            if (folder) {
+                showNotification(`Abriendo carpeta (simulado): ${folder.name}`, 'info');
+            }
+        }
 
-        async function createNote() { 
-            const createdNote = await DatabaseManager.create('notes', { title: 'Nueva Nota', content: '', pinned: false });
+        // --- Gestión de Notas ---
+        async function createNote() {
+            const newNoteData = { title: 'Nueva Nota', content: '', pinned: false };
+            const createdNote = await DatabaseManager.create('notes', newNoteData);
             if (createdNote) {
-                const fullNote = { ...createdNote, created: new Date(createdNote.created_at), updated: new Date(createdNote.updated_at) };
-                notes.unshift(fullNote); currentNoteId = fullNote.id; renderNotes(); selectNote(fullNote.id);
+                const fullNote = {...createdNote, id: createdNote.id, created: new Date(createdNote.created_at), updated: new Date(createdNote.updated_at) };
+                notes.unshift(fullNote);
+                currentNoteId = fullNote.id;
+                renderNotes();
+                selectNote(fullNote.id);
                 showNotification('Nota creada.', 'success');
             }
         }
-        function renderNotes() { 
-            const listEl = document.getElementById('notesList'); if (!listEl) return; listEl.innerHTML = '';
-            notes.sort((a,b) => new Date(b.updated) - new Date(a.updated)).sort((a,b) => (b.pinned ? 1:0) - (a.pinned ? 1:0));
-            if (notes.length === 0) { listEl.innerHTML = `<p style="color:var(--text-secondary);text-align:center;padding:1rem;">No hay notas.</p>`; document.getElementById('noteTitle').value=''; document.getElementById('noteContent').value=''; return; }
+        function renderNotes() {
+            const notesListContainer = document.getElementById('notesList');
+            if(!notesListContainer) return;
+            notesListContainer.innerHTML = '';
+            notes.sort((a,b) => new Date(b.updated) - new Date(a.updated))
+                 .sort((a,b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
             notes.forEach(note => {
-                const item = document.createElement('div'); item.className = `note-item ${currentNoteId === note.id ? 'active':''}`;
-                item.setAttribute('data-note-id', note.id);
-                item.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;"><strong title="${note.title}">${note.title?.substring(0,25)||"Sin Título"}${note.title && note.title.length > 25 ? '...':''}</strong><div><i class="fas fa-thumbtack pin-note" style="color:${note.pinned ? 'var(--accent-color)':'var(--text-secondary)'};cursor:pointer;margin-right:8px;font-size:0.9em;" title="Fijar"></i><i class="fas fa-trash delete-note-icon" style="color:var(--text-secondary);cursor:pointer;font-size:0.9em;" title="Eliminar"></i></div></div><div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${note.content?.substring(0,40)||"<i>Vacía...</i>"}${note.content && note.content.length > 40 ? '...':''}</div>`;
-                item.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('pin-note')) { e.stopPropagation(); togglePinNote(note.id); }
-                    else if (e.target.classList.contains('delete-note-icon')) { e.stopPropagation(); deleteNoteConfirmation(note.id); }
-                    else { selectNote(note.id); }
+                const noteElement = document.createElement('div');
+                noteElement.className = `note-item ${currentNoteId === note.id ? 'active' : ''}`;
+                noteElement.setAttribute('data-note-id', note.id);
+                noteElement.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong title="${note.title}">${note.title ? note.title.substring(0,30) : 'Sin Título'}${note.title && note.title.length > 30 ? '...' : ''}</strong>
+                        <div>
+                          <i class="fas fa-thumbtack pin-note" style="color: ${note.pinned ? 'var(--accent-color)' : 'var(--text-secondary)'}; cursor:pointer; margin-right: 8px;" title="Fijar/Desfijar Nota"></i>
+                          <i class="fas fa-trash delete-note-icon" style="color: var(--text-secondary); cursor:pointer;" title="Eliminar Nota"></i>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        ${note.content ? note.content.substring(0, 50) : ''}${note.content && note.content.length > 50 ? '...' : ''}
+                    </div>`;
+                noteElement.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('pin-note')) {
+                        e.stopPropagation(); togglePinNote(note.id);
+                    } else if (e.target.classList.contains('delete-note-icon')) {
+                        e.stopPropagation(); deleteNoteConfirmation(note.id);
+                    } else {
+                        selectNote(note.id);
+                    }
                 });
-                listEl.appendChild(item);
+                notesListContainer.appendChild(noteElement);
             });
+             if (!currentNoteId && notes.length > 0) {
+                currentNoteId = notes[0].id;
+            }
+            if (currentNoteId) {
+                selectNote(currentNoteId);
+            } else {
+                document.getElementById('noteTitle').value = '';
+                document.getElementById('noteContent').value = '';
+            }
         }
-        function selectNote(noteId) { 
-            currentNoteId = noteId; const note = notes.find(n=>n.id===noteId);
-            document.getElementById('noteTitle').value = note ? note.title:''; document.getElementById('noteContent').value = note ? note.content:'';
-            document.querySelectorAll('.note-item').forEach(i=>i.classList.remove('active'));
-            document.querySelector(`.note-item[data-note-id="${noteId}"]`)?.classList.add('active');
-        }
-        async function saveNote(showNotif=true) { 
-            if (!currentNoteId) { if(showNotif) showNotification("No hay nota seleccionada.", "warning"); return; }
-            const noteIndex = notes.findIndex(n=>n.id===currentNoteId);
+        async function togglePinNote(noteId) {
+            const noteIndex = notes.findIndex(n => n.id === noteId);
             if (noteIndex > -1) {
-                const dataToUpdate = {title:document.getElementById('noteTitle').value.trim()||'Nota sin título', content:document.getElementById('noteContent').value};
-                const updatedDB = await DatabaseManager.update('notes', currentNoteId, dataToUpdate);
-                if (updatedDB) {
-                    notes[noteIndex] = {...notes[noteIndex], ...updatedDB, updated:new Date(updatedDB.updated_at)};
-                    renderNotes(); selectNote(currentNoteId); if(showNotif) showNotification('Nota guardada.','success');
+                const originalPinnedState = notes[noteIndex].pinned;
+                notes[noteIndex].pinned = !notes[noteIndex].pinned;
+                notes[noteIndex].updated = new Date(); 
+                
+                const updatedNoteDB = await DatabaseManager.update('notes', noteId, { pinned: notes[noteIndex].pinned });
+                if (updatedNoteDB) {
+                     notes[noteIndex] = {...notes[noteIndex], ...updatedNoteDB, updated: new Date(updatedNoteDB.updated_at), created: new Date(updatedNoteDB.created_at) };
+                    renderNotes(); 
+                } else { 
+                    notes[noteIndex].pinned = originalPinnedState;
+                    notes[noteIndex].updated = new Date(notes[noteIndex].updated_at); 
                 }
             }
         }
-        function autoSaveNote(){clearTimeout(window.autoSaveTimeout);window.autoSaveTimeout=setTimeout(()=>saveNote(false),1500);}
-        async function deleteNote(){if(currentNoteId)deleteNoteConfirmation(currentNoteId);else showNotification("No hay nota seleccionada.","warning");}
-        function deleteNoteConfirmation(noteId){showCustomConfirm("¿Eliminar esta nota?",async()=>{const s=await DatabaseManager.delete('notes',noteId);if(s){notes=notes.filter(n=>n.id!==noteId);if(currentNoteId===noteId){currentNoteId=notes.length>0?notes[0].id:null;if(currentNoteId)selectNote(currentNoteId);else{document.getElementById('noteTitle').value='';document.getElementById('noteContent').value='';}}renderNotes();showNotification('Nota eliminada.','success');}});}
-        async function togglePinNote(noteId){const i=notes.findIndex(n=>n.id===noteId);if(i>-1){const p=!notes[i].pinned;const u=await DatabaseManager.update('notes',noteId,{pinned:p});if(u){notes[i].pinned=p;notes[i].updated=new Date(u.updated_at);renderNotes();}}}
-        function formatText(c){console.warn(`formatText('${c}') no implementado.`);}
-        function insertList(){console.warn("insertList no implementado.");}
-        async function summarizeNoteWithGemini(){if(!currentNoteId){showNotification('Selecciona nota.','warning');return;}const n=notes.find(i=>i.id===currentNoteId);if(!n||!n.content?.trim()){showNotification('Nota vacía.','warning');return;}const p=`Resume el siguiente texto en español:\n\n"${n.content}"\n\nResumen:`;const s=await GeminiAPIHelper.generateText(p);if(s){const r=await DatabaseManager.create('notes',{title:`Resumen de: ${n.title}`,content:s,pinned:false});if(r){notes.unshift({...r,created:new Date(r.created_at),updated:new Date(r.updated_at)});renderNotes();selectNote(r.id);showNotification('Resumen guardado.','success');}}}
-        async function continueWritingWithGemini(){if(!currentNoteId){showNotification('Selecciona nota.','warning');return;}const c=document.getElementById('noteContent').value;const p=`Continúa el texto:\n\n"${c}"\n\nAdicional:`;const t=await GeminiAPIHelper.generateText(p);if(t){document.getElementById('noteContent').value+=`\n\n${t.trim()}`;await saveNote(false);showNotification('Texto continuado.','success');}}
-        async function suggestEventDetailsWithGemini(){const t=document.getElementById('eventTitleInput').value.trim();if(!t){showNotification('Ingresa título.','warning');return;}const p=`Descripción para evento "${t}":`;const s=await GeminiAPIHelper.generateText(p);if(s){document.getElementById('eventDescriptionInput').value=s.trim();showNotification('Descripción sugerida.','success');}}
-        const dailyPhrases=["La sonrisa es el idioma universal.","Ama lo que haces.","Sigue adelante.","Cree en ti."];function showDailyTip(){const t=dailyPhrases[Math.floor(Math.random()*dailyPhrases.length)];document.getElementById('tipModalContent').textContent=t;openModal('tipModal');}
+        function deleteNoteConfirmation(noteId) {
+            showCustomConfirm("¿Estás seguro de eliminar esta nota?", async () => {
+                const success = await DatabaseManager.delete('notes', noteId);
+                if (success) {
+                    notes = notes.filter(n => n.id !== noteId);
+                    if (currentNoteId === noteId) {
+                        currentNoteId = notes.length > 0 ? notes[0].id : null;
+                         if (currentNoteId) selectNote(currentNoteId);
+                         else {
+                            document.getElementById('noteTitle').value = '';
+                            document.getElementById('noteContent').value = '';
+                        }
+                    }
+                    renderNotes();
+                    showNotification('Nota eliminada.', 'success');
+                }
+            });
+        }
+        function selectNote(noteId) {
+            currentNoteId = noteId;
+            const currentNote = notes.find(n => n.id === currentNoteId);
+            if (currentNote) {
+                document.getElementById('noteTitle').value = currentNote.title || '';
+                document.getElementById('noteContent').value = currentNote.content || '';
+            } else {
+                document.getElementById('noteTitle').value = '';
+                document.getElementById('noteContent').value = '';
+                 currentNoteId = null; 
+            }
+            document.querySelectorAll('.note-item').forEach(item => item.classList.remove('active'));
+            const activeNoteElement = document.querySelector(`.note-item[data-note-id="${noteId}"]`);
+            if (activeNoteElement) activeNoteElement.classList.add('active');
+        }
+        async function saveNote(showNotif = true) {
+            if (currentNoteId) {
+                const noteIndex = notes.findIndex(n => n.id === currentNoteId);
+                if (noteIndex > -1) {
+                    const updatedTitle = document.getElementById('noteTitle').value.trim() || 'Nota sin título';
+                    const updatedContent = document.getElementById('noteContent').value;
+                    const dataToUpdate = {
+                        title: updatedTitle,
+                        content: updatedContent,
+                    };
+                    const updatedNoteFromDB = await DatabaseManager.update('notes', currentNoteId, dataToUpdate);
+                    if (updatedNoteFromDB) {
+                        notes[noteIndex] = {...notes[noteIndex], ...updatedNoteFromDB, updated: new Date(updatedNoteFromDB.updated_at), created: new Date(updatedNoteFromDB.created_at) };
+                        renderNotes(); 
+                        selectNote(currentNoteId); 
+                        if(showNotif) showNotification('Nota guardada.', 'success');
+                    }
+                }
+            }
+        }
+        async function deleteNote() {
+            if (currentNoteId) {
+                deleteNoteConfirmation(currentNoteId);
+            } else {
+                showNotification("No hay ninguna nota seleccionada para eliminar.", "warning");
+            }
+        }
+        let autoSaveTimeoutId = null;
+        function autoSaveNote() {
+            clearTimeout(autoSaveTimeoutId);
+            autoSaveTimeoutId = setTimeout(() => saveNote(false), 1500); 
+        }
+        function formatText(command) { console.warn("formatText no implementado completamente."); }
+        function insertList() { console.warn("insertList no implementado completamente."); }
 
-        function generateCalendar() { 
-            const grid=document.getElementById('calendarGrid');
-            const title=document.getElementById('calendarTitle');
+        // --- Gestión de Calendario y Eventos ---
+        function generateCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const title = document.getElementById('calendarTitle');
             if(!grid || !title) return;
 
-            const months=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-            title.textContent=`${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
-            grid.innerHTML=''; // Limpiar calendario
+            const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            title.textContent = `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+            grid.innerHTML = '';
 
-            // Encabezados de días de la semana
-            ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(dayName => {
+            const dayHeaders = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            dayHeaders.forEach(day => {
                 const dayHeader = document.createElement('div');
                 dayHeader.className = 'calendar-day calendar-header-day';
-                dayHeader.textContent = dayName;
+                dayHeader.textContent = day;
                 grid.appendChild(dayHeader);
             });
 
             const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
             const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            const firstDayOfWeek = firstDayOfMonth.getDay(); 
             const daysInMonth = lastDayOfMonth.getDate();
-            const firstDayOfWeek = firstDayOfMonth.getDay(); // 0 (Dom) - 6 (Sáb)
 
-            // Celdas vacías para los días antes del inicio del mes
-            for(let i = 0; i < firstDayOfWeek; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.className = 'calendar-day empty';
-                grid.appendChild(emptyCell);
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                grid.appendChild(document.createElement('div')).className = 'calendar-day empty';
             }
 
             const today = new Date();
-            // Celdas para cada día del mes
-            for(let day = 1; day <= daysInMonth; day++) {
-                const dayCell = document.createElement('div');
-                dayCell.className = 'calendar-day';
-                dayCell.textContent = day;
-                dayCell.dataset.day = day; // Usar dataset para almacenar el día
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                dayElement.setAttribute('data-day', day);
 
-                if(today.getDate() === day && 
-                   today.getMonth() === currentDate.getMonth() && 
-                   today.getFullYear() === currentDate.getFullYear()) {
-                    dayCell.classList.add('today');
+                if (today.getDate() === day && today.getMonth() === currentDate.getMonth() && today.getFullYear() === currentDate.getFullYear()) {
+                    dayElement.classList.add('today');
                 }
                 
-                // Lógica para marcar eventos (asumiendo que 'events' es un array de objetos evento)
+                const currentDateForFilter = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
                 const dayEvents = events.filter(event => {
-                    if (!event.date) return false;
-                    const eventDate = new Date(event.date + 'T00:00:00'); // Normalizar para comparar solo fecha
-                    return eventDate.getFullYear() === currentDate.getFullYear() &&
-                           eventDate.getMonth() === currentDate.getMonth() &&
-                           eventDate.getDate() === day;
+                    if (!event.date || typeof event.date !== 'string') { 
+                        console.warn(`Evento con ID ${event.id} tiene fecha faltante o inválida en generateCalendar. Omitiendo.`);
+                        return false;
+                    }
+                    const eventDateParts = event.date.split('-'); 
+                    if (eventDateParts.length !== 3) { 
+                        console.warn(`Formato de fecha inválido para evento ID ${event.id}: ${event.date}. Omitiendo.`);
+                        return false;
+                    }
+                    const eventDate = new Date(Date.UTC(parseInt(eventDateParts[0]), parseInt(eventDateParts[1]) - 1, parseInt(eventDateParts[2])));
+                    const calendarDayDate = new Date(Date.UTC(currentDateForFilter.getFullYear(), currentDateForFilter.getMonth(), currentDateForFilter.getDate()));
+                    return eventDate.getTime() === calendarDayDate.getTime();
                 });
 
-                if(dayEvents.length > 0) {
-                    dayCell.classList.add('has-events');
+
+                if (dayEvents.length > 0) {
+                    dayElement.classList.add('has-events');
                     const eventIndicator = document.createElement('span');
                     eventIndicator.className = 'event-indicator';
                     eventIndicator.title = `${dayEvents.length} evento(s)`;
-                    dayCell.appendChild(eventIndicator);
+                    dayElement.appendChild(eventIndicator);
                 }
-                dayCell.addEventListener('click', () => selectDate(day));
-                grid.appendChild(dayCell);
+
+                dayElement.addEventListener('click', () => selectDate(day));
+                grid.appendChild(dayElement);
             }
         }
-        function previousMonth(){currentDate.setMonth(currentDate.getMonth()-1);generateCalendar();}
-        function nextMonth(){currentDate.setMonth(currentDate.getMonth()+1);generateCalendar();}
-        function todayView(){currentDate=new Date();generateCalendar();}
-        function selectDate(day){const s=new Date(currentDate.getFullYear(),currentDate.getMonth(),day);document.getElementById('eventDateInput').valueAsDate=s;document.getElementById('eventTitleInput').value='';document.getElementById('eventDescriptionInput').value='';document.getElementById('eventTimeInput').value='';openModal('eventModal');}
-        function addEvent(){document.getElementById('eventTitleInput').value='';document.getElementById('eventDescriptionInput').value='';document.getElementById('eventDateInput').valueAsDate=new Date();document.getElementById('eventTimeInput').value='';openModal('eventModal');}
-        async function confirmAddEvent(){const t=document.getElementById('eventTitleInput').value.trim();const d=document.getElementById('eventDateInput').value;const m=document.getElementById('eventTimeInput').value;const ds=document.getElementById('eventDescriptionInput').value.trim();if(!t||!d){showNotification('Título y fecha requeridos.','warning');return;}const cE=await DatabaseManager.create('events',{title:t,date:d,time:m||null,description:ds});if(cE){events.push({...cE,created:new Date(cE.created_at),date:cE.date.split('T')[0]});generateCalendar();closeModal('eventModal');showNotification('Evento creado.','success');}}
-        function showDatabaseConfig(){openModal('databaseModal');}
-        function toggleView(){const gC=document.getElementById('foldersGrid');const vI=document.getElementById('viewIcon');if(gC&&vI){gC.classList.toggle('list-view');vI.classList.toggle('fa-th');vI.classList.toggle('fa-list');document.getElementById('filesGrid')?.classList.toggle('list-view',gC.classList.contains('list-view'));}}
-        function loadSampleData(){folders=[{id:'s1',name:'Docs (Muestra)',created:new Date()}];notes=[{id:'s2',title:'Bienvenida',content:'Organiza tus ideas.',created:new Date(),updated:new Date(),pinned:true}];files=[{id:'s3',file_name:"ejemplo.pdf",size:102400,type:"application/pdf",uploaded:new Date(),url:"#"}];events=[{id:'s4',title:'Reunión',date:new Date().toISOString().split('T')[0],time:'10:00',description:'Objetivos.',created:new Date()}];if(notes.length>0)currentNoteId=notes[0].id;console.log("Datos de muestra cargados.");}
-        function updateDateTime() { /* Placeholder */ }
+        function previousMonth() { currentDate.setMonth(currentDate.getMonth() - 1); generateCalendar(); }
+        function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); generateCalendar(); }
+        function todayView() { currentDate = new Date(); generateCalendar(); }
+        function selectDate(day) {
+            const selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            document.getElementById('eventDateInput').value = selectedDate.toISOString().split('T')[0];
+            document.getElementById('eventDescriptionInput').value = '';
+            addEvent(); 
+        }
+        function addEvent() {
+            document.getElementById('eventTitleInput').value = '';
+            document.getElementById('eventTimeInput').value = '';
+            document.getElementById('eventDescriptionInput').value = '';
+            if(!document.getElementById('eventDateInput').value) { 
+                 document.getElementById('eventDateInput').value = new Date().toISOString().split('T')[0];
+            }
+            document.getElementById('eventModal').classList.add('active');
+        }
+        async function confirmAddEvent() {
+            const title = document.getElementById('eventTitleInput').value.trim();
+            const date = document.getElementById('eventDateInput').value;
+            const time = document.getElementById('eventTimeInput').value;
+            const description = document.getElementById('eventDescriptionInput').value.trim();
+
+            if (title && date) {
+                const newEventData = { title, date, time, description };
+                const createdEvent = await DatabaseManager.create('events', newEventData);
+                if (createdEvent) {
+                    events.push({...createdEvent, id: createdEvent.id, created: new Date(createdEvent.created_at), date: createdEvent.date.split('T')[0], description: createdEvent.description });
+                    generateCalendar();
+                    closeModal('eventModal');
+                    showNotification('Evento creado.', 'success');
+                }
+            } else {
+                showNotification('Por favor, completa al menos el título y la fecha del evento.', 'warning');
+            }
+        }
+
+        // --- Utilidades (Modales, Notificaciones, etc.) ---
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.classList.remove('active');
+        }
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.classList.add('active');
+        }
+        function showDatabaseConfig() { document.getElementById('databaseModal').classList.add('active'); }
+
+        function showNotification(message, type = 'info', duration = 3000) {
+            const notification = document.createElement('div');
+            notification.className = `notification slide-in ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.remove('slide-in');
+                notification.classList.add('slide-out');
+                setTimeout(() => notification.remove(), 500); 
+            }, duration); 
+        }
+
+        function showCustomConfirm(message, onConfirm) {
+            const existingModal = document.querySelector('.custom-confirm-modal');
+            if (existingModal) existingModal.remove();
+
+            const confirmModal = document.createElement('div');
+            confirmModal.className = 'modal active custom-confirm-modal'; 
+            confirmModal.innerHTML = `
+                <div class="modal-content">
+                    <p style="margin-bottom: 1.5rem; color: var(--text-primary);">${message}</p>
+                    <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                        <button class="btn btn-secondary" id="customConfirmCancel">Cancelar</button>
+                        <button class="btn" id="customConfirmOk">Confirmar</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(confirmModal);
+
+            document.getElementById('customConfirmOk').onclick = () => { onConfirm(); confirmModal.remove(); };
+            document.getElementById('customConfirmCancel').onclick = () => confirmModal.remove();
+        }
+
+        function updateDateTime() { /* Implementar si es necesario */ }
+        function toggleView() {
+            const icon = document.getElementById('viewIcon');
+            const gridContainer = document.getElementById('foldersGrid'); 
+            const filesGridContainer = document.getElementById('filesGrid');
+
+            if(!icon) return;
+
+            const applyViewChange = (container) => {
+                if (!container) return;
+                if (icon.classList.contains('fa-th')) { 
+                    container.classList.add('list-view');
+                    container.classList.remove('grid-view'); 
+                } else { 
+                    container.classList.add('grid-view');
+                    container.classList.remove('list-view');
+                }
+            };
+
+            if (icon.classList.contains('fa-th')) {
+                icon.className = 'fas fa-list'; 
+            } else {
+                icon.className = 'fas fa-th'; 
+            }
+
+            if (currentSection === 'folders' && gridContainer) applyViewChange(gridContainer);
+            if (currentSection === 'files' && filesGridContainer) applyViewChange(filesGridContainer);
+        }
+
+
+        function loadSampleData() {
+            folders = [ { id: 'sample-101', name: 'Documentos (Muestra)', created: new Date() }, { id: 'sample-102', name: 'Proyectos (Muestra)', created: new Date() }];
+            notes = [ { id: 'sample-201', title: 'Nota de Bienvenida (Muestra)', content: 'Empieza a organizar tus ideas. Esta es una nota de muestra cargada porque no se pudo conectar a la base de datos.', created: new Date(), updated: new Date(), pinned: true }];
+            files = [ {id: 'sample-301', file_name: "ejemplo_local.pdf", size: 102400, type: "application/pdf", uploaded: new Date(), url: "#", file: new File(["sample pdf content"], "ejemplo_local.pdf", {type: "application/pdf"})}];
+            events = [ { id: 'sample-401', title: 'Reunión Inicial (Muestra)', date: new Date().toISOString().split('T')[0], time: '10:00', description: 'Discutir objetivos del proyecto. Evento de muestra.', created: new Date() }];
+            if (notes.length > 0) currentNoteId = notes[0].id;
+            console.log("Datos de muestra cargados como fallback.");
+        }
+
+
+        // --- Event Listeners Adicionales (Teclado, etc.) ---
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal') && !e.target.classList.contains('custom-confirm-modal')) {
+                if (!e.target.closest('.custom-confirm-modal .modal-content')) {
+                     e.target.classList.remove('active');
+                }
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') { 
+                e.preventDefault();
+                if (currentSection === 'notes' && currentNoteId) {
+                    saveNote();
+                }
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') { 
+                e.preventDefault();
+                if (currentSection === 'notes') createNote();
+                else if (currentSection === 'folders') createFolder();
+            }
+            if (e.key === 'Escape') { 
+                document.querySelectorAll('.modal.active').forEach(modal => {
+                    if (!modal.classList.contains('custom-confirm-modal')) {
+                        modal.classList.remove('active');
+                    }
+                });
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+             const mainContent = document.getElementById('mainContent');
+            if (window.innerWidth > 768) {
+                if(sidebar.classList.contains('show')){
+                }
+            } else {
+            }
+        });
+
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.closest('.modal-content')) {
+                e.preventDefault(); 
+                if (e.target.id === 'folderNameInput') confirmCreateFolder();
+                else if (e.target.id === 'eventTitleInput' || e.target.id === 'eventDateInput' || e.target.id === 'eventTimeInput') {
+                     if(e.target.id === 'eventTimeInput' || (document.getElementById('eventTitleInput').value && document.getElementById('eventDateInput').value)) {
+                        confirmAddEvent();
+                     }
+                }
+            }
+        });
+
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => { /* Aquí iría el registro del Service Worker si se usara */ });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggles = document.querySelectorAll('.settings-container .toggle-switch');
+            toggles.forEach(toggle => {
+                if (toggle.id === 'darkModeToggle') {
+                }
+                toggle.addEventListener('click', function() {
+                    if (this.id === 'darkModeToggle') {
+                    } else {
+                        this.classList.toggle('active');
+                        const settingKey = this.id.replace('Toggle', '');
+                        localStorage.setItem(settingKey + 'Preference', this.classList.contains('active'));
+                        console.log(`Setting ${settingKey} changed to: ${this.classList.contains('active')}`);
+                    }
+                });
+
+                 if (toggle.id !== 'darkModeToggle') { 
+                    const settingKey = toggle.id.replace('Toggle', '');
+                    const savedPreference = localStorage.getItem(settingKey + 'Preference');
+                    if (savedPreference !== null) {
+                        toggle.classList.toggle('active', savedPreference === 'true');
+                    }
+                }
+            });
+        });
+
+
+        window.MySpaceApp = { showSection, createFolder, createNote, saveNote, addEvent, setTheme, setLanguage, DatabaseManager, folders, notes, files, events, processFiles };
 
         console.log('Mi Espacio Inteligente - Aplicación cargada y lista.');
     </script>
 </body>
 </html>
+
 

@@ -924,6 +924,7 @@
         .notification.error   { background: var(--danger-color); }
         .notification.warning { background: var(--warning-color); }
         .notification.info    { background: var(--accent-color); }
+
         /* Modal de Confirmación Personalizado y File Preview Modal */
         .custom-confirm-modal .modal-content,
         #filePreviewModal .modal-content,
@@ -944,7 +945,7 @@
             align-items: center;
             min-height: 200px;
         }
-        #filePreviewImage, #filePreviewVideo, #filePreviewIframe { 
+        #filePreviewImage, #filePreviewVideo, #filePreviewIframe { /* Cambiado embed a iframe */
             max-width: 100%;
             max-height: 70vh;
             object-fit: contain;
@@ -965,6 +966,24 @@
             color: var(--text-primary);
             width: 100%;
         }
+        /* Event Notification Modal */
+        #eventNotificationModal .modal-content {
+            border-left: 5px solid var(--accent-color);
+        }
+        #eventNotificationModal .event-time {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+        #eventNotificationModal .event-description {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+
         /* Responsive Design */
         @media (max-width: 992px) {
             .notes-container {
@@ -1152,7 +1171,7 @@
                         <i class="fas fa-moon"></i>
                     </button>
                     <button class="lang-toggle" id="langToggle">
-                        <i class="fas fa-globe"></i> ES
+                        <i class="fas fa-globe"></i> <span id="langToggleText">ES</span>
                     </button>
                 </div>
             </header>
@@ -1257,14 +1276,14 @@
                                 <i class="fas fa-list"></i>
                             </button>
                             <button class="editor-btn" id="summarizeNoteBtn" title="Resumir Nota con IA">
-                                <i class="fas fa-star ai-icon"></i> Resumir
+                                <i class="fas fa-star ai-icon"></i> <span data-translate="notes.summarize">Resumir</span>
                             </button>
                             <button class="editor-btn" id="continueWritingBtn" title="Continuar Escritura con IA">
-                                <i class="fas fa-pen-fancy ai-icon"></i> Continuar
+                                <i class="fas fa-pen-fancy ai-icon"></i> <span data-translate="notes.continue">Continuar</span>
                             </button>
                         </div>
-                        <input type="text" class="note-title" id="noteTitle" placeholder="Título de la nota..." data-translate="notes.title.placeholder">
-                        <textarea class="note-content" id="noteContent" placeholder="Escribe tu nota aquí..." data-translate="notes.content.placeholder"></textarea>
+                        <input type="text" class="note-title" id="noteTitle" placeholder="Título de la nota..." data-translate="notes.title.placeholder" data-translate-placeholder="notes.title.placeholder">
+                        <textarea class="note-content" id="noteContent" placeholder="Escribe tu nota aquí..." data-translate="notes.content.placeholder" data-translate-placeholder="notes.content.placeholder"></textarea>
                     </div>
                 </div>
             </section>
@@ -1295,7 +1314,7 @@
             </section>
             <section class="content-section" id="files">
                 <div class="files-header">
-                    <input type="text" class="search-box" placeholder="Buscar archivos..." data-translate="files.search.placeholder" id="fileSearch">
+                    <input type="text" class="search-box" placeholder="Buscar archivos..." data-translate="files.search.placeholder" data-translate-placeholder="files.search.placeholder" id="fileSearch">
                     <div class="filter-buttons">
                         <button class="filter-btn active" data-filter="all" data-translate="files.filter.all">Todos</button>
                         <button class="filter-btn" data-filter="image" data-translate="files.filter.images">Imágenes</button>
@@ -1323,9 +1342,9 @@
                             <span class="setting-label" data-translate="settings.appearance.font">Tamaño de Fuente</span>
                             <div class="setting-control">
                                 <select class="dropdown" id="fontSizeSelect">
-                                    <option value="small">Pequeño</option>
-                                    <option value="medium" selected>Mediano</option>
-                                    <option value="large">Grande</option>
+                                    <option value="small" data-translate="settings.appearance.font.small">Pequeño</option>
+                                    <option value="medium" selected data-translate="settings.appearance.font.medium">Mediano</option>
+                                    <option value="large" data-translate="settings.appearance.font.large">Grande</option>
                                 </select>
                             </div>
                         </div>
@@ -1336,8 +1355,8 @@
                             <span class="setting-label" data-translate="settings.language.select">Idioma de la Interfaz</span>
                             <div class="setting-control">
                                 <select class="dropdown" id="languageSelect">
-                                    <option value="es">Español</option>
-                                    <option value="en">English</option>
+                                    <option value="es" data-translate="settings.language.spanish">Español</option>
+                                    <option value="en" data-translate="settings.language.english">English</option>
                                 </select>
                             </div>
                         </div>
@@ -1367,7 +1386,7 @@
                             <span class="setting-label" data-translate="settings.database.status">Estado de Conexión</span>
                             <div class="setting-control">
                                 <span id="dbConnectionStatus" class="badge" style="color: var(--warning-color);">
-                                    <i class="fas fa-exclamation-triangle"></i> Pendiente de Configuración
+                                    <i class="fas fa-exclamation-triangle"></i> <span data-translate="settings.database.status.pending">Pendiente de Configuración</span>
                                 </span>
                             </div>
                         </div>
@@ -1375,7 +1394,7 @@
                             <span class="setting-label" data-translate="settings.database.config">Configurar Conexión</span>
                             <div class="setting-control">
                                 <button class="btn btn-secondary" onclick="showDatabaseConfig()">
-                                    <i class="fas fa-database"></i> Configurar
+                                    <i class="fas fa-database"></i> <span data-translate="settings.database.config.button">Configurar</span>
                                 </button>
                             </div>
                         </div>
@@ -1392,7 +1411,7 @@
             <h3 class="modal-title" data-translate="modal.folder.title">Nueva Carpeta</h3>
             <div class="form-group">
                 <label class="form-label" data-translate="modal.folder.name">Nombre de la carpeta:</label>
-                <input type="text" class="form-input" id="folderNameInput" placeholder="Mi nueva carpeta">
+                <input type="text" class="form-input" id="folderNameInput" placeholder="Mi nueva carpeta" data-translate-placeholder="modal.folder.name.placeholder">
             </div>
             <div class="form-group">
                 <button class="btn" onclick="confirmCreateFolder()">
@@ -1410,16 +1429,11 @@
             <h3 class="modal-title" data-translate="modal.event.title">Nuevo Evento</h3>
             <div class="form-group">
                 <label class="form-label" data-translate="modal.event.name">Título del evento:</label>
-                <input type="text" class="form-input" id="eventTitleInput" placeholder="Mi evento">
+                <input type="text" class="form-input" id="eventTitleInput" placeholder="Mi evento" data-translate-placeholder="modal.event.name.placeholder">
             </div>
             <div class="form-group">
-                <label class="form-label" for="eventDescriptionInput">Descripción:</label>
-                <textarea id="eventDescriptionInput" class="form-textarea" placeholder="Describe tu evento..."></textarea>
-            </div>
-            <div class="form-group">
-                 <button class="btn btn-secondary" id="suggestEventDetailsBtn" style="width:100%; margin-bottom: 1rem;">
-                    <i class="fas fa-lightbulb"></i>  ✨  Sugerir Descripción
-                </button>
+                <label class="form-label" for="eventDescriptionInput" data-translate="modal.event.description">Descripción:</label>
+                <textarea id="eventDescriptionInput" class="form-textarea" placeholder="Describe tu evento..." data-translate-placeholder="modal.event.description.placeholder"></textarea>
             </div>
             <div class="form-group">
                 <label class="form-label" data-translate="modal.event.date">Fecha:</label>
@@ -1467,8 +1481,8 @@
             <button class="modal-close" onclick="closeModal('tipModal')">
                 <i class="fas fa-times"></i>
             </button>
-            <h3 class="modal-title" id="tipModalTitle"> ✨  Consejo del Día</h3>
-            <p id="tipModalContent" style="color: var(--text-secondary); line-height: 1.6;">Cargando consejo...</p>
+            <h3 class="modal-title" id="tipModalTitle" data-translate="modal.tip.title">✨ Consejo del Día</h3>
+            <p id="tipModalContent" style="color: var(--text-secondary); line-height: 1.6;" data-translate="modal.tip.loading">Cargando consejo...</p>
         </div>
     </div>
     <div class="modal" id="filePreviewModal">
@@ -1476,7 +1490,7 @@
             <button class="modal-close" onclick="closeModal('filePreviewModal')">
                 <i class="fas fa-times"></i>
             </button>
-            <h3 class="modal-title" id="filePreviewTitle">Vista Previa de Archivo</h3>
+            <h3 class="modal-title" id="filePreviewTitle" data-translate="modal.filePreview.title">Vista Previa de Archivo</h3>
             <div class="modal-body" id="filePreviewBody" style="text-align: center;">
                 <img id="filePreviewImage" src="#" alt="Previsualización de Imagen" style="display:none; max-width:100%; max-height: 70vh; object-fit: contain; margin: auto;">
                 <video id="filePreviewVideo" src="#" style="display:none; max-width:100%; max-height: 70vh; margin: auto;" controls></video>
@@ -1487,11 +1501,25 @@
             </div>
             <div class="form-group" style="margin-top: 1.5rem; text-align: right;">
                 <a href="#" id="fileDownloadLink" class="btn btn-secondary" download>
-                    <i class="fas fa-download"></i> Descargar
+                    <i class="fas fa-download"></i> <span data-translate="modal.filePreview.download">Descargar</span>
                 </a>
             </div>
         </div>
     </div>
+    <div class="modal" id="eventNotificationModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('eventNotificationModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="modal-title" id="eventNotificationTitle" data-translate="modal.eventNotification.title">🔔 ¡Recordatorio de Evento!</h3>
+            <p id="eventNotificationTime" class="event-time"></p>
+            <p id="eventNotificationDescription" class="event-description"></p>
+            <div class="form-group" style="margin-top: 1.5rem; text-align: right;">
+                 <button class="btn" onclick="closeModal('eventNotificationModal')" data-translate="modal.eventNotification.close">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
     <div class="db-status" id="dbStatus">
         <div style="display: flex; align-items: center; gap: 0.5rem;">
             <i class="fas fa-database"></i>
@@ -1513,13 +1541,308 @@
         // Variables Globales
         let currentSection = 'home';
         let currentTheme = 'dark';
-        let currentLanguage = 'es';
+        let currentLanguage = 'es'; // Idioma por defecto
         let folders = [];
         let notes = [];
         let files = []; 
         let events = [];
         let currentDate = new Date();
         let currentNoteId = null;
+        let checkUpcomingEventsInterval = null;
+        const notifiedEventIdsThisSession = new Set();
+
+
+        // --- Traducciones ---
+        const translations = {
+            es: {
+                "nav.home": "Inicio",
+                "nav.folders": "Mis Carpetas",
+                "nav.notes": "Bloc de Notas",
+                "nav.calendar": "Calendario",
+                "nav.files": "Archivos Subidos",
+                "nav.settings": "Configuración",
+                "header.title": "Mi Espacio Inteligente",
+                "home.title": "Bienvenido a tu Espacio Inteligente",
+                "home.subtitle": "Donde la inteligencia artificial se encuentra con tu productividad personal",
+                "home.cta": "Comenzar Ahora",
+                "home.aiTip": "Consejo del Día",
+                "home.cards.folders.title": "Gestión de Carpetas",
+                "home.cards.folders.desc": "Organiza tus archivos de manera inteligente con carpetas personalizadas y clasificación automática.",
+                "home.cards.notes.title": "Notas Inteligentes",
+                "home.cards.notes.desc": "Crea, edita y organiza tus ideas con un editor enriquecido y sugerencias de IA.",
+                "home.cards.calendar.title": "Calendario Personal",
+                "home.cards.calendar.desc": "Planifica tu día con recordatorios inteligentes y gestión avanzada de eventos.",
+                "home.cards.ai.title": "Asistente IA",
+                "home.cards.ai.desc": "Tu compañero inteligente para responder preguntas y sugerir mejoras en tu flujo de trabajo.",
+                "folders.create": "Nueva Carpeta",
+                "folders.upload": "Subir Archivo",
+                "folders.view": "Vista",
+                "folders.dropzone.title": "Arrastra y suelta tus archivos aquí",
+                "folders.dropzone.desc": "O haz clic para seleccionar archivos",
+                "notes.create": "Nueva Nota",
+                "notes.newNoteTitle": "Nueva Nota",
+                "notes.untitledNote": "Nota sin Título",
+                "notes.pinTooltip": "Fijar/Desfijar Nota",
+                "notes.deleteTooltip": "Eliminar Nota",
+                "notes.save": "Guardar",
+                "notes.delete": "Eliminar",
+                "notes.list.title": "Mis Notas",
+                "notes.title.placeholder": "Título de la nota...",
+                "notes.content.placeholder": "Escribe tu nota aquí...",
+                "notes.summarize": "Resumir",
+                "notes.continue": "Continuar",
+                "calendar.addEvent": "Nuevo Evento",
+                "calendar.today": "Hoy",
+                "files.search.placeholder": "Buscar archivos...",
+                "files.filter.all": "Todos",
+                "files.filter.images": "Imágenes",
+                "files.filter.documents": "Documentos",
+                "files.filter.videos": "Videos",
+                "files.filter.audio": "Audio",
+                "files.noMatch": "No hay archivos que coincidan.",
+                "settings.appearance.title": "Apariencia",
+                "settings.appearance.theme": "Modo Oscuro",
+                "settings.appearance.font": "Tamaño de Fuente",
+                "settings.appearance.font.small": "Pequeño",
+                "settings.appearance.font.medium": "Mediano",
+                "settings.appearance.font.large": "Grande",
+                "settings.language.title": "Idioma",
+                "settings.language.select": "Idioma de la Interfaz",
+                "settings.language.spanish": "Español",
+                "settings.language.english": "English",
+                "settings.ai.title": "Configuración de IA",
+                "settings.ai.suggestions": "Sugerencias Automáticas",
+                "settings.ai.voice": "Reconocimiento de Voz",
+                "settings.database.title": "Configuración de Base de Datos",
+                "settings.database.status": "Estado de Conexión",
+                "settings.database.status.pending": "Pendiente de Configuración",
+                "settings.database.status.connected": "Conectado",
+                "settings.database.status.error": "Error de Conexión",
+                "settings.database.config": "Configurar Conexión",
+                "settings.database.config.button": "Configurar",
+                "modal.folder.title": "Nueva Carpeta",
+                "modal.folder.name": "Nombre de la carpeta:",
+                "modal.folder.name.placeholder": "Mi nueva carpeta",
+                "modal.folder.create": "Crear Carpeta",
+                "modal.event.title": "Nuevo Evento",
+                "modal.event.name": "Título del evento:",
+                "modal.event.name.placeholder": "Mi evento",
+                "modal.event.description": "Descripción:",
+                "modal.event.description.placeholder": "Describe tu evento...",
+                "modal.event.suggest": "✨ Sugerir Descripción",
+                "modal.event.date": "Fecha:",
+                "modal.event.time": "Hora:",
+                "modal.event.create": "Crear Evento",
+                "modal.database.title": "Configuración de Base de Datos",
+                "modal.database.desc": "Para conectar tu base de datos Supabase, necesitas añadir tu URL de Supabase y tu Clave Anónima (Anon Key) directamente en las constantes `SUPABASE_URL` y `SUPABASE_ANON_KEY` al inicio del bloque de código JavaScript.",
+                "modal.database.connect": "Entendido",
+                "modal.tip.title": "✨ Consejo del Día",
+                "modal.tip.loading": "Obteniendo consejo...",
+                "modal.filePreview.title": "Vista Previa de Archivo",
+                "modal.filePreview.download": "Descargar",
+                "modal.filePreview.downloadSuggestion": "Puedes intentar descargarlo.",
+                "modal.eventNotification.titlePrefix": "🔔 ¡Recordatorio!",
+                "modal.eventNotification.title": "🔔 ¡Recordatorio de Evento!",
+                "modal.eventNotification.noDescription": "Sin descripción adicional.",
+                "modal.eventNotification.close": "Cerrar",
+                "notification.error.noDbConnection": "No hay conexión a la base de datos.",
+                "notification.error.supabaseConfig": "Supabase URL o Anon Key no configuradas.",
+                "notification.error.supabaseConnection": "Error al conectar con Supabase:",
+                "notification.error.creating": "Error al crear en",
+                "notification.error.reading": "Error al leer de",
+                "notification.error.updating": "Error al actualizar en",
+                "notification.error.deleting": "Error al eliminar de",
+                "notification.error.aiError": "Error de IA:",
+                "notification.info.loadingData": "Cargando datos desde Supabase...",
+                "notification.success.dataLoaded": "Datos cargados exitosamente.",
+                "notification.warning.dataLoadError": "Error al cargar datos. Usando datos de muestra.",
+                "notification.success.folderCreated": "Carpeta creada exitosamente.",
+                "notification.success.filesProcessed": "archivo(s) procesado(s) y guardado(s).",
+                "notification.error.fileUploadError": "Error al subir",
+                "notification.error.fileUrlError": "Error al obtener URL pública para",
+                "notification.error.fileMetadataError": "Error al guardar metadatos de",
+                "notification.warning.noFilesToProcess": "No se pudieron procesar los archivos seleccionados. Revisa la consola para más detalles y verifica tus políticas RLS en Supabase.",
+                "notification.success.noteCreated": "Nota creada.",
+                "notification.success.noteSaved": "Nota guardada.",
+                "notification.success.noteDeleted": "Nota eliminada.",
+                "notification.warning.noNoteSelectedSummarize": "Por favor, selecciona una nota para resumir.",
+                "notification.warning.emptyNoteSummarize": "La nota está vacía o no ha sido seleccionada correctamente.",
+                "notification.success.summaryGenerated": "Resumen generado y guardado como nueva nota.",
+                "notification.warning.noNoteSelectedContinue": "Por favor, selecciona una nota para continuar.",
+                "notification.warning.noteNotSelectedContinue": "La nota no ha sido seleccionada correctamente.",
+                "notification.warning.noNoteSelectedDelete": "No hay ninguna nota seleccionada para eliminar.",
+                "notification.success.textContinued": "Texto continuado y añadido a la nota.",
+                "notification.warning.emptyEventTitle": "Por favor, ingresa un título para el evento.",
+                "notification.success.descriptionSuggested": "Descripción sugerida y añadida.",
+                "notification.success.eventCreated": "Evento creado.",
+                "notification.warning.eventFormError": "Por favor, completa al menos el título y la fecha del evento.",
+                "notification.error.noFileForPreview": "No hay URL o archivo local disponible para previsualizar o descargar.",
+                "notification.error.fileTextReadError": "Error al leer el archivo de texto.",
+                "notification.info.pdfPreviewNotAvailable": "La previsualización directa de PDF no está disponible. Utiliza el botón de descarga.",
+                "notification.info.wordPreviewNotAvailable": "La previsualización directa de archivos Word no está disponible. Utiliza el botón de descarga.",
+                "notification.info.genericPreviewNotAvailable": "No hay previsualización directa disponible para este tipo de archivo",
+                "notification.info.onlyMetadataPreview": "Este archivo fue cargado en una sesión anterior o es solo metadata. La previsualización completa requiere que el archivo esté almacenado en la nube (ej. Supabase Storage) y que la aplicación esté configurada para accederlo desde allí. Por ahora, la previsualización no está disponible para este archivo.",
+                "notification.success.fileDeleted": "Archivo \"${fileName}\" eliminado exitosamente.",
+                "notification.warning.fileDeleteFromDBOnly": "Archivo \"${fileName}\" eliminado de la base de datos. Puede que siga en el almacenamiento.",
+                "notification.error.fileDeleteErrorDB": "Error al eliminar \"${fileName}\" de la base de datos.",
+                "notification.error.fileDeleteErrorStorage": "Error al eliminar del almacenamiento:",
+                "notification.error.fileDeletePathError": "No se pudo determinar el path del archivo en Storage desde la URL. Solo se eliminará de la base de datos.",
+                "notification.error.fileDeleteException": "Excepción al procesar eliminación de Storage para",
+                "db.status.pending": "Base de Datos: Pendiente",
+                "db.status.connected": "Base de Datos: Conectado a Supabase",
+                "db.status.error": "Base de Datos: Error de conexión",
+                "confirm.deleteNote": "¿Estás seguro de eliminar esta nota?",
+                "confirm.deleteFile": "¿Estás seguro de eliminar el archivo", 
+                "confirm.deleteFileSuffix": "? Esta acción también intentará eliminarlo del almacenamiento.",
+                "confirm.cancel": "Cancelar",
+                "confirm.ok": "Confirmar",
+            },
+            en: {
+                "nav.home": "Home",
+                "nav.folders": "My Folders",
+                "nav.notes": "Notepad",
+                "nav.calendar": "Calendar",
+                "nav.files": "Uploaded Files",
+                "nav.settings": "Settings",
+                "header.title": "My Smart Space",
+                "home.title": "Welcome to your Smart Space",
+                "home.subtitle": "Where artificial intelligence meets your personal productivity",
+                "home.cta": "Get Started Now",
+                "home.aiTip": "Tip of the Day",
+                "home.cards.folders.title": "Folder Management",
+                "home.cards.folders.desc": "Organize your files intelligently with custom folders and automatic classification.",
+                "home.cards.notes.title": "Smart Notes",
+                "home.cards.notes.desc": "Create, edit, and organize your ideas with a rich editor and AI suggestions.",
+                "home.cards.calendar.title": "Personal Calendar",
+                "home.cards.calendar.desc": "Plan your day with smart reminders and advanced event management.",
+                "home.cards.ai.title": "AI Assistant",
+                "home.cards.ai.desc": "Your smart companion to answer questions and suggest improvements to your workflow.",
+                "folders.create": "New Folder",
+                "folders.upload": "Upload File",
+                "folders.view": "View",
+                "folders.dropzone.title": "Drag and drop your files here",
+                "folders.dropzone.desc": "Or click to select files",
+                "notes.create": "New Note",
+                "notes.newNoteTitle": "New Note",
+                "notes.untitledNote": "Untitled Note",
+                "notes.pinTooltip": "Pin/Unpin Note",
+                "notes.deleteTooltip": "Delete Note",
+                "notes.save": "Save",
+                "notes.delete": "Delete",
+                "notes.list.title": "My Notes",
+                "notes.title.placeholder": "Note title...",
+                "notes.content.placeholder": "Write your note here...",
+                "notes.summarize": "Summarize",
+                "notes.continue": "Continue",
+                "calendar.addEvent": "New Event",
+                "calendar.today": "Today",
+                "files.search.placeholder": "Search files...",
+                "files.filter.all": "All",
+                "files.filter.images": "Images",
+                "files.filter.documents": "Documents",
+                "files.filter.videos": "Videos",
+                "files.filter.audio": "Audio",
+                "files.noMatch": "No files match.",
+                "settings.appearance.title": "Appearance",
+                "settings.appearance.theme": "Dark Mode",
+                "settings.appearance.font": "Font Size",
+                "settings.appearance.font.small": "Small",
+                "settings.appearance.font.medium": "Medium",
+                "settings.appearance.font.large": "Large",
+                "settings.language.title": "Language",
+                "settings.language.select": "Interface Language",
+                "settings.language.spanish": "Español",
+                "settings.language.english": "English",
+                "settings.ai.title": "AI Settings",
+                "settings.ai.suggestions": "Automatic Suggestions",
+                "settings.ai.voice": "Voice Recognition",
+                "settings.database.title": "Database Settings",
+                "settings.database.status": "Connection Status",
+                "settings.database.status.pending": "Pending Configuration",
+                "settings.database.status.connected": "Connected",
+                "settings.database.status.error": "Connection Error",
+                "settings.database.config": "Configure Connection",
+                "settings.database.config.button": "Configure",
+                "modal.folder.title": "New Folder",
+                "modal.folder.name": "Folder name:",
+                "modal.folder.name.placeholder": "My new folder",
+                "modal.folder.create": "Create Folder",
+                "modal.event.title": "New Event",
+                "modal.event.name": "Event title:",
+                "modal.event.name.placeholder": "My event",
+                "modal.event.description": "Description:",
+                "modal.event.description.placeholder": "Describe your event...",
+                "modal.event.suggest": "✨ Suggest Description",
+                "modal.event.date": "Date:",
+                "modal.event.time": "Time:",
+                "modal.event.create": "Create Event",
+                "modal.database.title": "Database Configuration",
+                "modal.database.desc": "To connect your Supabase database, you need to add your Supabase URL and Anon Key directly into the `SUPABASE_URL` and `SUPABASE_ANON_KEY` constants at the beginning of the JavaScript code block.",
+                "modal.database.connect": "Understood",
+                "modal.tip.title": "✨ Tip of the Day",
+                "modal.tip.loading": "Fetching tip...",
+                "modal.filePreview.title": "File Preview",
+                "modal.filePreview.download": "Download",
+                "modal.filePreview.downloadSuggestion": "You can try downloading it.",
+                "modal.eventNotification.titlePrefix": "🔔 Reminder!",
+                "modal.eventNotification.title": "🔔 Event Reminder!",
+                "modal.eventNotification.noDescription": "No additional description.",
+                "modal.eventNotification.close": "Close",
+                "notification.error.noDbConnection": "No database connection.",
+                "notification.error.supabaseConfig": "Supabase URL or Anon Key not configured.",
+                "notification.error.supabaseConnection": "Error connecting to Supabase:",
+                "notification.error.creating": "Error creating in",
+                "notification.error.reading": "Error reading from",
+                "notification.error.updating": "Error updating in",
+                "notification.error.deleting": "Error deleting from",
+                "notification.error.aiError": "AI Error:",
+                "notification.info.loadingData": "Loading data from Supabase...",
+                "notification.success.dataLoaded": "Data loaded successfully.",
+                "notification.warning.dataLoadError": "Error loading data. Using sample data.",
+                "notification.success.folderCreated": "Folder created successfully.",
+                "notification.success.filesProcessed": "file(s) processed and saved.",
+                "notification.error.fileUploadError": "Error uploading",
+                "notification.error.fileUrlError": "Error getting public URL for",
+                "notification.error.fileMetadataError": "Error saving metadata for",
+                "notification.warning.noFilesToProcess": "Could not process selected files. Check console for details and verify RLS policies in Supabase.",
+                "notification.success.noteCreated": "Note created.",
+                "notification.success.noteSaved": "Note saved.",
+                "notification.success.noteDeleted": "Note deleted.",
+                "notification.warning.noNoteSelectedSummarize": "Please select a note to summarize.",
+                "notification.warning.emptyNoteSummarize": "The note is empty or not selected correctly.",
+                "notification.success.summaryGenerated": "Summary generated and saved as a new note.",
+                "notification.warning.noNoteSelectedContinue": "Please select a note to continue.",
+                "notification.warning.noteNotSelectedContinue": "The note is not selected correctly.",
+                "notification.warning.noNoteSelectedDelete": "No note selected to delete.",
+                "notification.success.textContinued": "Text continued and added to the note.",
+                "notification.warning.emptyEventTitle": "Please enter a title for the event.",
+                "notification.success.descriptionSuggested": "Description suggested and added.",
+                "notification.success.eventCreated": "Event created.",
+                "notification.warning.eventFormError": "Please complete at least the event title and date.",
+                "notification.error.noFileForPreview": "No URL or local file available for preview or download.",
+                "notification.error.fileTextReadError": "Error reading text file.",
+                "notification.info.pdfPreviewNotAvailable": "Direct PDF preview is not available. Use the download button.",
+                "notification.info.wordPreviewNotAvailable": "Direct Word file preview is not available. Use the download button.",
+                "notification.info.genericPreviewNotAvailable": "No direct preview available for this file type",
+                "notification.info.onlyMetadataPreview": "This file was uploaded in a previous session or is metadata only. Full preview requires the file to be stored in the cloud (e.g., Supabase Storage) and the app configured to access it. Preview is not available for this file for now.",
+                "notification.success.fileDeleted": "File \"${fileName}\" deleted successfully.",
+                "notification.warning.fileDeleteFromDBOnly": "File \"${fileName}\" deleted from database. It might still exist in storage.",
+                "notification.error.fileDeleteErrorDB": "Error deleting \"${fileName}\" from database.",
+                "notification.error.fileDeleteErrorStorage": "Error deleting from storage:",
+                "notification.error.fileDeletePathError": "Could not determine file path in Storage from URL. Will only delete from database.",
+                "notification.error.fileDeleteException": "Exception while processing Storage deletion for",
+                "db.status.pending": "Database: Pending",
+                "db.status.connected": "Database: Connected to Supabase",
+                "db.status.error": "Database: Connection Error",
+                "confirm.deleteNote": "Are you sure you want to delete this note?",
+                "confirm.deleteFile": "Are you sure you want to delete the file",
+                "confirm.deleteFileSuffix": "? This action will also attempt to delete it from storage.",
+                "confirm.cancel": "Cancel",
+                "confirm.ok": "Confirm",
+            }
+        };
+        // --- Fin de Traducciones ---
+
 
         // --- Gemini API Helper ---
         const GeminiAPIHelper = {
@@ -1578,7 +1901,7 @@
                 } catch (error) {
                     this.hideLoading();
                     console.error('GeminiAPI: Error al llamar a la API:', error);
-                    showNotification(`Error de IA: ${error.message}`, 'error');
+                    showNotification(getTranslation("notification.error.aiError") + ` ${error.message}`, 'error');
                     return null;
                 }
             }
@@ -1599,7 +1922,7 @@
 
             async connect() {
                 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-                    const errorMessage = 'Supabase URL o Anon Key no configuradas.';
+                    const errorMessage = getTranslation("notification.error.supabaseConfig");
                     console.error(errorMessage);
                     updateDbStatus(false, errorMessage);
                     return false;
@@ -1608,19 +1931,19 @@
                     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                     console.log('Cliente de Supabase inicializado.');
                     this.isConnected = true;
-                    updateDbStatus(true, 'Conectado a Supabase');
+                    updateDbStatus(true, getTranslation("settings.database.status.connected"));
                     return true;
                 } catch (error) {
                     console.error('Error al conectar con Supabase:', error);
                     this.isConnected = false;
-                    updateDbStatus(false, `Error de conexión: ${error.message}`);
+                    updateDbStatus(false, `${getTranslation("notification.error.supabaseConnection")} ${error.message}`);
                     return false;
                 }
             },
 
             async create(table, dataToInsert) {
                 if (!this.isConnected || !supabase) {
-                    showNotification('No hay conexión a la base de datos.', 'error');
+                    showNotification(getTranslation("notification.error.noDbConnection"), 'error');
                     return null;
                 }
                 const { id, ...payload } = dataToInsert;
@@ -1647,7 +1970,7 @@
                 const { data, error } = await supabase.from(this.config.tables[table]).insert([payload]).select();
                 if (error) {
                     console.error(`Error creando en ${table}:`, error);
-                    showNotification(`Error al crear en ${table}: ${error.message}`, 'error');
+                    showNotification(`${getTranslation("notification.error.creating")} ${table}: ${error.message}`, 'error');
                     return null;
                 }
                 console.log(`Datos creados en ${table}:`, data);
@@ -1659,7 +1982,7 @@
                 const { data, error } = await supabase.from(this.config.tables[table]).select('*');
                 if (error) {
                     console.error(`Error leyendo de ${table}:`, error);
-                    showNotification(`Error al leer de ${table}: ${error.message}`, 'error');
+                    showNotification(`${getTranslation("notification.error.reading")} ${table}: ${error.message}`, 'error');
                     return [];
                 }
                 return data || [];
@@ -1667,7 +1990,7 @@
 
             async update(table, id, dataToUpdate) {
                 if (!this.isConnected || !supabase) {
-                     showNotification('No hay conexión a la base de datos.', 'error');
+                     showNotification(getTranslation("notification.error.noDbConnection"), 'error');
                      return null;
                 }
                 const { id: recordId, ...updatePayload } = dataToUpdate;
@@ -1688,7 +2011,7 @@
                     .select();
                 if (error) {
                     console.error(`Error actualizando ID ${id} en ${table}:`, error);
-                    showNotification(`Error al actualizar en ${table}: ${error.message}`, 'error');
+                    showNotification(`${getTranslation("notification.error.updating")} ${table}: ${error.message}`, 'error');
                     return null;
                 }
                 console.log(`Datos actualizados en ${table} (ID: ${id}):`, data);
@@ -1697,13 +2020,13 @@
 
             async delete(table, id) {
                 if (!this.isConnected || !supabase) {
-                    showNotification('No hay conexión a la base de datos.', 'error');
+                    showNotification(getTranslation("notification.error.noDbConnection"), 'error');
                     return false;
                 }
                 const { error } = await supabase.from(this.config.tables[table]).delete().eq('id', id);
                 if (error) {
                     console.error(`Error eliminando ID ${id} de ${table}:`, error);
-                    showNotification(`Error al eliminar de ${table}: ${error.message}`, 'error');
+                    showNotification(`${getTranslation("notification.error.deleting")} ${table}: ${error.message}`, 'error');
                     return false;
                 }
                 console.log(`ID ${id} eliminado de ${table}`);
@@ -1713,19 +2036,23 @@
         function updateDbStatus(connected, message) {
             const dbStatusDiv = document.getElementById('dbStatus');
             const dbConnectionStatusSpan = document.getElementById('dbConnectionStatus');
+            const dbStatusText = dbStatusDiv.querySelector('span');
+
 
             if (connected) {
                 dbStatusDiv.classList.add('connected');
-                dbStatusDiv.innerHTML = `<div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-database"></i><span>Conectado a Supabase</span></div>`;
+                dbStatusText.textContent = getTranslation("db.status.connected");
                 if (dbConnectionStatusSpan) {
-                    dbConnectionStatusSpan.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success-color);"></i> Conectado`;
+                    dbConnectionStatusSpan.innerHTML = `<i class="fas fa-check-circle" style="color: var(--success-color);"></i> ${getTranslation("settings.database.status.connected")}`;
                     dbConnectionStatusSpan.style.color = 'var(--success-color)';
                 }
             } else {
                 dbStatusDiv.classList.remove('connected');
-                dbStatusDiv.innerHTML = `<div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-database"></i><span>${message || 'Desconectado'}</span></div>`;
+                const statusKey = message.includes("configuradas") ? "db.status.pending" : "db.status.error";
+                dbStatusText.textContent = message || getTranslation(statusKey);
+
                 if (dbConnectionStatusSpan) {
-                    dbConnectionStatusSpan.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning-color);"></i> ${message || 'Desconectado'}`;
+                    dbConnectionStatusSpan.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--warning-color);"></i> ${message || getTranslation(statusKey)}`;
                     dbConnectionStatusSpan.style.color = 'var(--warning-color)';
                 }
             }
@@ -1733,17 +2060,17 @@
 
 
         async function initializeApp() {
+            currentLanguage = localStorage.getItem('language') || 'es'; 
+            setLanguage(currentLanguage); 
+
             const savedTheme = localStorage.getItem('theme') || 'dark';
-            const savedLanguage = localStorage.getItem('language') || 'es';
-
             setTheme(savedTheme);
-            setLanguage(savedLanguage);
-
+            
             const connected = await DatabaseManager.connect();
             if (connected) {
                 await loadDataFromSupabase();
             } else {
-                showNotification('No se pudo conectar a Supabase. Usando datos de muestra.', 'warning');
+                showNotification(getTranslation("notification.warning.dataLoadError"), 'warning');
                 loadSampleData();
                 renderAllSections();
             }
@@ -1751,10 +2078,11 @@
             updateDateTime();
             setupEventListeners();
             showSection(localStorage.getItem('lastSection') || 'home');
+            startEventNotificationChecks();
         }
 
         async function loadDataFromSupabase() {
-            showNotification('Cargando datos desde Supabase...', 'info');
+            showNotification(getTranslation("notification.info.loadingData"), 'info');
             try {
                 folders = (await DatabaseManager.read('folders')).map(f => ({...f, id: f.id, name: f.name, created: new Date(f.created_at)})) || [];
                 
@@ -1792,10 +2120,10 @@
                 }) || [];
 
                 console.log('Datos cargados desde Supabase.');
-                showNotification('Datos cargados exitosamente.', 'success');
+                showNotification(getTranslation("notification.success.dataLoaded"), 'success');
             } catch (error) {
                 console.error('Error al cargar datos desde Supabase:', error);
-                showNotification('Error al cargar datos. Usando datos de muestra.', 'warning');
+                showNotification(getTranslation("notification.warning.dataLoadError"), 'warning');
                 loadSampleData();
             }
             renderAllSections();
@@ -1828,7 +2156,7 @@
             });
 
             document.getElementById('darkModeToggle').addEventListener('click', function() {
-                this.classList.toggle('active', currentTheme === 'dark'); 
+                // setTheme se encarga de la lógica y de actualizar la clase 'active' de este toggle
             });
             document.getElementById('fontSizeSelect').addEventListener('change', changeFontSize);
             document.getElementById('languageSelect').addEventListener('change', changeLanguage);
@@ -1856,20 +2184,20 @@
 
             document.getElementById('summarizeNoteBtn').addEventListener('click', summarizeNoteWithGemini);
             document.getElementById('continueWritingBtn').addEventListener('click', continueWritingWithGemini);
-            document.getElementById('suggestEventDetailsBtn').addEventListener('click', suggestEventDetailsWithGemini);
+            // Botón de sugerir descripción de evento ELIMINADO
             document.getElementById('dailyTipBtn').addEventListener('click', showDailyTip); 
         }
 
         async function summarizeNoteWithGemini() {
             console.log("Intentando resumir nota...");
             if (!currentNoteId) {
-                showNotification('Por favor, selecciona una nota para resumir.', 'warning');
+                showNotification(getTranslation("notification.warning.noNoteSelectedSummarize"), 'warning');
                 console.log("Resumir: No hay nota seleccionada.");
                 return;
             }
             const note = notes.find(n => n.id === currentNoteId);
             if (!note || !note.content || !note.content.trim()) {
-                showNotification('La nota está vacía o no ha sido seleccionada correctamente.', 'warning');
+                showNotification(getTranslation("notification.warning.emptyNoteSummarize"), 'warning');
                 console.log("Resumir: Nota vacía o no encontrada. Nota:", note);
                 return;
             }
@@ -1897,7 +2225,7 @@
                     currentNoteId = fullSummaryNote.id; 
                     renderNotes();
                     selectNote(fullSummaryNote.id);
-                    showNotification('Resumen generado y guardado como nueva nota.', 'success');
+                    showNotification(getTranslation("notification.success.summaryGenerated"), 'success');
                 } else {
                     console.error("Resumir: Falló la creación de la nota de resumen en la DB.");
                 }
@@ -1909,13 +2237,13 @@
         async function continueWritingWithGemini() {
             console.log("Intentando continuar escritura...");
             if (!currentNoteId) {
-                showNotification('Por favor, selecciona una nota para continuar.', 'warning');
+                showNotification(getTranslation("notification.warning.noNoteSelectedContinue"), 'warning');
                  console.log("Continuar: No hay nota seleccionada.");
                 return;
             }
             const note = notes.find(n => n.id === currentNoteId);
             if (!note) {
-                showNotification('La nota no ha sido seleccionada correctamente.', 'warning');
+                showNotification(getTranslation("notification.warning.noteNotSelectedContinue"), 'warning');
                 console.log("Continuar: Nota no encontrada.");
                 return;
             }
@@ -1932,34 +2260,12 @@
                 document.getElementById('noteContent').value += `\n\n${continuation.trim()}`;
                 console.log("Continuar: Contenido actualizado en textarea.");
                 await saveNote(false); 
-                showNotification('Texto continuado y añadido a la nota.', 'success');
+                showNotification(getTranslation("notification.success.textContinued"), 'success');
             } else {
                 console.log("Continuar: Gemini no devolvió una continuación.");
             }
         }
-        async function suggestEventDetailsWithGemini() {
-            console.log("Intentando sugerir detalles del evento...");
-            const eventTitle = document.getElementById('eventTitleInput').value.trim();
-            if (!eventTitle) {
-                showNotification('Por favor, ingresa un título para el evento.', 'warning');
-                console.log("Sugerir Detalles Evento: Título vacío.");
-                return;
-            }
-            console.log("Sugerir Detalles Evento: Título:", eventTitle);
-
-            const prompt = `Para un evento titulado "${eventTitle}", sugiere una descripción atractiva y concisa en español. La descripción no debe exceder las 150 palabras.`;
-            console.log("Sugerir Detalles Evento: Prompt para Gemini:", prompt);
-            const suggestion = await GeminiAPIHelper.generateText(prompt);
-            console.log("Sugerir Detalles Evento: Respuesta de Gemini:", suggestion);
-
-            if (suggestion) {
-                document.getElementById('eventDescriptionInput').value = suggestion.trim();
-                showNotification('Descripción sugerida y añadida.', 'success');
-            } else {
-                console.log("Sugerir Detalles Evento: Gemini no devolvió una sugerencia.");
-            }
-        }
-
+        
         const dailyPhrases = [
             "La sonrisa es el idioma universal de las almas inteligentes.",
             "El único modo de hacer un gran trabajo es amar lo que haces. - Steve Jobs",
@@ -2036,22 +2342,69 @@
             }
             localStorage.setItem('theme', theme);
         }
-
-        function toggleLanguage() {
-            currentLanguage = currentLanguage === 'es' ? 'en' : 'es';
-            setLanguage(currentLanguage);
+        
+        function getTranslation(key, lang = currentLanguage) {
+            return translations[lang]?.[key] || key; 
         }
+
+        function applyTranslations(lang) {
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                const translation = getTranslation(key, lang);
+                
+                if (el.hasAttribute('data-translate-placeholder')) {
+                    el.placeholder = translation;
+                } else if (el.hasAttribute('data-translate-title')) {
+                     el.title = translation;
+                } else {
+                    let textNode = Array.from(el.childNodes).find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '');
+                    if (textNode) {
+                        textNode.textContent = translation;
+                    } else if (el.childNodes.length === 0 || (el.childNodes.length === 1 && el.childNodes[0].nodeType === Node.TEXT_NODE)) {
+                        el.textContent = translation;
+                    } else {
+                        const spanToTranslate = el.querySelector('span[data-translate-target="true"]');
+                        if (spanToTranslate) {
+                            spanToTranslate.textContent = translation;
+                        } else if (el.id === 'langToggleText') {
+                            el.textContent = lang.toUpperCase(); // Special case for lang toggle text
+                        } else {
+                             console.warn(`Elemento con key '${key}' tiene hijos complejos y no se encontró target específico para traducción.`)
+                        }
+                    }
+                }
+            });
+            document.title = getTranslation("header.title", lang); 
+        }
+
 
         function setLanguage(lang) {
             currentLanguage = lang;
-            document.getElementById('langToggle').innerHTML = `<i class="fas fa-globe"></i> ${lang.toUpperCase()}`;
+            document.documentElement.lang = lang; 
+            
+            const langToggleText = document.getElementById('langToggleText');
+            if (langToggleText) {
+                langToggleText.textContent = lang.toUpperCase();
+            } else { 
+                 const langToggleBtn = document.getElementById('langToggle');
+                 if(langToggleBtn) langToggleBtn.innerHTML = `<i class="fas fa-globe"></i> <span id="langToggleText">${lang.toUpperCase()}</span>`;
+            }
+
             document.getElementById('languageSelect').value = lang;
             localStorage.setItem('language', lang);
+            applyTranslations(lang);
+            generateCalendar(); // Regenerar calendario con nombres de días/meses en el nuevo idioma
         }
+
 
         function changeLanguage(e) {
             setLanguage(e.target.value);
         }
+        function toggleLanguage() {
+            const newLang = currentLanguage === 'es' ? 'en' : 'es';
+            setLanguage(newLang);
+        }
+
 
         function changeFontSize(e) {
             const size = e.target.value;
@@ -2081,7 +2434,7 @@
                     renderFolders();
                     closeModal('folderModal');
                     document.getElementById('folderNameInput').value = '';
-                    showNotification('Carpeta creada exitosamente.', 'success');
+                    showNotification(getTranslation("notification.success.folderCreated"), 'success');
                 }
             }
         }
@@ -2108,7 +2461,7 @@
         function openFolder(folderId) {
             const folder = folders.find(f => f.id === folderId);
             if (folder) {
-                alert(`Abriendo carpeta: ${folder.name} (ID: ${folder.id}).`);
+                showNotification(`Abriendo carpeta (simulado): ${folder.name}`, 'info');
             }
         }
 
@@ -2148,8 +2501,8 @@
 
         async function processFiles(fileList) {
             if (!DatabaseManager.isConnected || !supabase) {
-                showNotification('Error: No hay conexión a Supabase. No se pueden subir archivos.', 'error');
-                showNotification("Verifica tus políticas RLS en Supabase para el bucket 'archivos' (ver comentarios en el código JS).", "warning", 7000);
+                showNotification(getTranslation("notification.error.noDbConnection"), 'error');
+                showNotification(getTranslation("notification.error.rlsWarning"), "warning", 7000);
                 return;
             }
 
@@ -2172,9 +2525,9 @@
                     if (uploadError) {
                         console.error('Error subiendo archivo a Supabase Storage:', uploadError);
                         if (uploadError.message && uploadError.message.includes('violates row-level security policy')) {
-                             showNotification(`Error RLS al subir ${file.name}: ${uploadError.message}. Revisa las políticas de seguridad en Supabase (ver comentarios en el código JS).`, 'error', 10000); 
+                             showNotification(`${getTranslation("notification.error.fileUploadError")} ${file.name}: ${uploadError.message}. ${getTranslation("notification.error.rlsWarning")}`, 'error', 10000); 
                         } else {
-                            showNotification(`Error al subir ${file.name}: ${uploadError.message}`, 'error');
+                            showNotification(`${getTranslation("notification.error.fileUploadError")} ${file.name}: ${uploadError.message}`, 'error');
                         }
                         continue; 
                     }
@@ -2185,7 +2538,7 @@
 
                     if (!urlData || !urlData.publicUrl) {
                         console.error('Error obteniendo URL pública para:', uploadData.path, urlData);
-                        showNotification(`Error al obtener URL pública para ${file.name}. Asegúrate que el bucket 'archivos' permita acceso público y las políticas RLS de SELECT estén correctas.`, 'error', 7000);
+                        showNotification(`${getTranslation("notification.error.fileUrlError")} ${file.name}. ${getTranslation("notification.error.bucketPolicyWarning")}`, 'error', 7000);
                         continue;
                     }
                     const publicUrl = urlData.publicUrl;
@@ -2204,7 +2557,6 @@
                         const fullFileObject = {
                             ...createdFileInDB, 
                             uploaded: new Date(createdFileInDB.uploaded_at || createdFileInDB.created_at), 
-                            // No guardamos el objeto 'file' aquí ya que se subió a Storage
                         };
                         files.unshift(fullFileObject); 
                         filesProcessedCount++;
@@ -2214,7 +2566,7 @@
                             previewedFile = true;
                         }
                     } else {
-                        showNotification(`Error al guardar metadatos de ${file.name} en la base de datos.`, 'error');
+                        showNotification(`${getTranslation("notification.error.fileMetadataError")} ${file.name}.`, 'error');
                     }
 
                 } catch (storageError) {
@@ -2226,9 +2578,9 @@
 
             renderFiles(); 
             if (filesProcessedCount > 0) {
-                showNotification(`${filesProcessedCount} archivo(s) subido(s) y guardado(s) exitosamente.`, 'success');
+                showNotification(`${filesProcessedCount} ${getTranslation("notification.success.filesProcessed")}`, 'success');
             } else if (fileList.length > 0) {
-                showNotification(`No se pudieron procesar los archivos seleccionados. Revisa la consola para más detalles y verifica tus políticas RLS en Supabase.`, 'warning', 7000);
+                showNotification(getTranslation("notification.warning.noFilesToProcess"), 'warning', 7000);
             }
         }
 
@@ -2255,7 +2607,7 @@
 
 
             if (filteredFiles.length === 0) {
-                grid.innerHTML = `<p style="color: var(--text-secondary); grid-column: 1 / -1; text-align: center;">No hay archivos que coincidan.</p>`;
+                grid.innerHTML = `<p style="color: var(--text-secondary); grid-column: 1 / -1; text-align: center;">${getTranslation("files.noMatch") || "No hay archivos que coincidan."}</p>`;
                 return;
             }
 
@@ -2320,7 +2672,8 @@
         }
 
         async function deleteFileConfirmation(fileId, fileName, fileUrl) {
-            showCustomConfirm(`¿Estás seguro de eliminar el archivo "${fileName}"? Esta acción también intentará eliminarlo del almacenamiento.`, async () => {
+            const confirmMessage = `${getTranslation("confirm.deleteFile")} "${fileName}"${getTranslation("confirm.deleteFileSuffix")}`;
+            showCustomConfirm(confirmMessage, async () => {
                 console.log(`Intentando eliminar archivo: ID=${fileId}, Nombre=${fileName}, URL=${fileUrl}`);
                 let deletedFromStorage = false;
 
@@ -2337,7 +2690,7 @@
                             const { error: storageError } = await supabase.storage.from('archivos').remove([storagePath]);
                             if (storageError) {
                                 console.error('Error eliminando archivo de Supabase Storage:', storageError);
-                                showNotification(`Error al eliminar '${fileName}' del almacenamiento: ${storageError.message}`, 'error');
+                                showNotification(`${getTranslation("notification.error.fileDeleteErrorStorage")} '${fileName}': ${storageError.message}`, 'error');
                             } else {
                                 console.log(`Archivo '${fileName}' eliminado de Supabase Storage exitosamente.`);
                                 deletedFromStorage = true;
@@ -2347,7 +2700,7 @@
                         }
                     } catch (e) {
                          console.error("Error al parsear la URL del archivo o al interactuar con Storage:", e);
-                         showNotification(`Excepción al procesar eliminación de Storage para '${fileName}': ${e.message}`, 'error');
+                         showNotification(`${getTranslation("notification.error.fileDeleteException")} '${fileName}': ${e.message}`, 'error');
                     }
                 }
 
@@ -2356,13 +2709,13 @@
                     files = files.filter(f => f.id !== fileId);
                     renderFiles();
                     if (deletedFromStorage || !fileUrl) { 
-                        showNotification(`Archivo "${fileName}" eliminado exitosamente.`, 'success');
+                        showNotification(getTranslation("notification.success.fileDeleted").replace('${fileName}', fileName), 'success');
                     } else { 
-                         showNotification(`Archivo "${fileName}" eliminado de la base de datos. Puede que siga en el almacenamiento.`, 'warning');
+                         showNotification(getTranslation("notification.warning.fileDeleteFromDBOnly").replace('${fileName}', fileName), 'warning');
                     }
                 } else {
                      if (!fileUrl || (fileUrl && deletedFromStorage)) { 
-                        showNotification(`Error al eliminar "${fileName}" de la base de datos.`, 'error');
+                        showNotification(getTranslation("notification.error.fileDeleteErrorDB").replace('${fileName}', fileName), 'error');
                      }
                 }
             });
@@ -2370,8 +2723,12 @@
 
         function cleanUrl(url) {
             if (typeof url !== 'string') return url;
-            let cleaned = url.replace(/^(https?|ftp):[\/]{2,}/i, '$1://'); 
-            cleaned = cleaned.replace(/([^:])\/\/+/g, '$1/'); 
+            // Primero, asegurar que el protocolo (http o https) tenga solo dos slashes.
+            let cleaned = url.replace(/^(https?|ftp):[\/]{2,}/i, '$1://');
+            // Luego, reemplazar cualquier secuencia de múltiples slashes (//, ///, etc.) en el resto de la URL
+            // con un solo slash. Esto se hace con una expresión regular que busca slashes
+            // que NO estén precedidos por dos puntos (para no afectar el :// del protocolo).
+            cleaned = cleaned.replace(/([^:])\/\/+/g, '$1/');
             return cleaned;
         }
 
@@ -2396,12 +2753,12 @@
                 }
             });
 
-            titleElement.textContent = fileObject.file_name || 'Vista Previa de Archivo';
+            titleElement.textContent = fileObject.file_name || getTranslation("modal.filePreview.title");
             let previewSrc = null;
             let canDownload = false;
 
             if (fileObject.url && typeof fileObject.url === 'string') {
-                previewSrc = cleanUrl(fileObject.url);
+                previewSrc = cleanUrl(fileObject.url); // Limpiar la URL
                 downloadLink.href = previewSrc;
                 downloadLink.download = fileObject.file_name || 'archivo';
                 downloadLink.style.display = 'inline-block';
@@ -2415,7 +2772,7 @@
                 canDownload = true;
                 console.log("File Preview: Using local Object URL.");
             } else {
-                fallbackElement.textContent = 'No hay URL o archivo local disponible para previsualizar o descargar.';
+                fallbackElement.textContent = getTranslation("notification.error.noFileForPreview");
                 fallbackElement.style.display = 'block';
                 downloadLink.style.display = 'none';
                 openModal('filePreviewModal');
@@ -2442,8 +2799,10 @@
                     audioElement.load();
                     previewed = true;
                 } else if (fileType.includes('pdf')) { 
-                    console.log("File Preview: PDF detected. Setting iframe source to:", `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(previewSrc)}`);
-                    iframeElement.src = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(previewSrc)}`;
+                    // Usar PDF.js viewer
+                    const pdfjsViewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(previewSrc)}`;
+                    console.log("File Preview: PDF detected. Setting iframe source to PDF.js viewer:", pdfjsViewerUrl);
+                    iframeElement.src = pdfjsViewerUrl;
                     iframeElement.style.display = 'block';
                     previewed = true;
                 } else if (fileType.startsWith('text/') && fileObject.file && !fileObject.url) { 
@@ -2453,7 +2812,7 @@
                         textElement.style.display = 'block';
                     }
                     reader.onerror = function() {
-                        fallbackElement.textContent = 'Error al leer el archivo de texto.';
+                        fallbackElement.textContent = getTranslation("notification.error.fileTextReadError");
                         fallbackElement.style.display = 'block';
                     }
                     reader.readAsText(fileObject.file);
@@ -2463,9 +2822,9 @@
 
             if (!previewed) { 
                  if (fileObject.url || (fileObject.file && fileObject.file instanceof File)) { 
-                    fallbackElement.textContent = `No hay previsualización directa disponible para este tipo de archivo (${fileType || 'desconocido'}). Puedes descargarlo.`;
+                    fallbackElement.textContent = `${getTranslation("notification.info.genericPreviewNotAvailable")} (${fileType || 'desconocido'}). ${getTranslation("modal.filePreview.downloadSuggestion") || "Puedes intentar descargarlo."}`;
                 } else { 
-                    fallbackElement.textContent = 'No se pudo determinar cómo previsualizar este archivo.';
+                    fallbackElement.textContent = getTranslation("notification.error.noFileForPreview");
                 }
                 fallbackElement.style.display = 'block';
             }
@@ -2492,7 +2851,7 @@
                     renderFolders();
                     closeModal('folderModal');
                     document.getElementById('folderNameInput').value = '';
-                    showNotification('Carpeta creada exitosamente.', 'success');
+                    showNotification(getTranslation("notification.success.folderCreated"), 'success');
                 }
             }
         }
@@ -2521,7 +2880,7 @@
 
         // --- Gestión de Notas ---
         async function createNote() {
-            const newNoteData = { title: 'Nueva Nota', content: '', pinned: false };
+            const newNoteData = { title: getTranslation("notes.newNoteTitle") || 'Nueva Nota', content: '', pinned: false };
             const createdNote = await DatabaseManager.create('notes', newNoteData);
             if (createdNote) {
                 const fullNote = {...createdNote, id: createdNote.id, created: new Date(createdNote.created_at), updated: new Date(createdNote.updated_at) };
@@ -2529,7 +2888,7 @@
                 currentNoteId = fullNote.id;
                 renderNotes();
                 selectNote(fullNote.id);
-                showNotification('Nota creada.', 'success');
+                showNotification(getTranslation("notification.success.noteCreated"), 'success');
             }
         }
         function renderNotes() {
@@ -2545,10 +2904,10 @@
                 noteElement.setAttribute('data-note-id', note.id);
                 noteElement.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <strong title="${note.title}">${note.title ? note.title.substring(0,30) : 'Sin Título'}${note.title && note.title.length > 30 ? '...' : ''}</strong>
+                        <strong title="${note.title}">${note.title ? note.title.substring(0,30) : getTranslation("notes.untitledNote")}${note.title && note.title.length > 30 ? '...' : ''}</strong>
                         <div>
-                          <i class="fas fa-thumbtack pin-note" style="color: ${note.pinned ? 'var(--accent-color)' : 'var(--text-secondary)'}; cursor:pointer; margin-right: 8px;" title="Fijar/Desfijar Nota"></i>
-                          <i class="fas fa-trash delete-note-icon" style="color: var(--text-secondary); cursor:pointer;" title="Eliminar Nota"></i>
+                          <i class="fas fa-thumbtack pin-note" style="color: ${note.pinned ? 'var(--accent-color)' : 'var(--text-secondary)'}; cursor:pointer; margin-right: 8px;" title="${getTranslation("notes.pinTooltip") || "Fijar/Desfijar Nota"}"></i>
+                          <i class="fas fa-trash delete-note-icon" style="color: var(--text-secondary); cursor:pointer;" title="${getTranslation("notes.deleteTooltip") || "Eliminar Nota"}"></i>
                         </div>
                     </div>
                     <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
@@ -2593,7 +2952,7 @@
             }
         }
         function deleteNoteConfirmation(noteId) {
-            showCustomConfirm("¿Estás seguro de eliminar esta nota?", async () => {
+            showCustomConfirm(getTranslation("confirm.deleteNote"), async () => {
                 const success = await DatabaseManager.delete('notes', noteId);
                 if (success) {
                     notes = notes.filter(n => n.id !== noteId);
@@ -2606,7 +2965,7 @@
                         }
                     }
                     renderNotes();
-                    showNotification('Nota eliminada.', 'success');
+                    showNotification(getTranslation("notification.success.noteDeleted"), 'success');
                 }
             });
         }
@@ -2629,7 +2988,7 @@
             if (currentNoteId) {
                 const noteIndex = notes.findIndex(n => n.id === currentNoteId);
                 if (noteIndex > -1) {
-                    const updatedTitle = document.getElementById('noteTitle').value.trim() || 'Nota sin título';
+                    const updatedTitle = document.getElementById('noteTitle').value.trim() || getTranslation("notes.untitledNote");
                     const updatedContent = document.getElementById('noteContent').value;
                     const dataToUpdate = {
                         title: updatedTitle,
@@ -2640,7 +2999,7 @@
                         notes[noteIndex] = {...notes[noteIndex], ...updatedNoteFromDB, updated: new Date(updatedNoteFromDB.updated_at), created: new Date(updatedNoteFromDB.created_at) };
                         renderNotes(); 
                         selectNote(currentNoteId); 
-                        if(showNotif) showNotification('Nota guardada.', 'success');
+                        if(showNotif) showNotification(getTranslation("notification.success.noteSaved"), 'success');
                     }
                 }
             }
@@ -2649,7 +3008,7 @@
             if (currentNoteId) {
                 deleteNoteConfirmation(currentNoteId);
             } else {
-                showNotification("No hay ninguna nota seleccionada para eliminar.", "warning");
+                showNotification(getTranslation("notification.warning.noNoteSelectedDelete"), "warning");
             }
         }
         let autoSaveTimeoutId = null;
@@ -2666,11 +3025,16 @@
             const title = document.getElementById('calendarTitle');
             if(!grid || !title) return;
 
-            const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            const months = currentLanguage === 'es' ? 
+                ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'] :
+                ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            const dayHeaders = currentLanguage === 'es' ?
+                ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'] :
+                ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
             title.textContent = `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
             grid.innerHTML = '';
 
-            const dayHeaders = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
             dayHeaders.forEach(day => {
                 const dayHeader = document.createElement('div');
                 dayHeader.className = 'calendar-day calendar-header-day';
@@ -2758,10 +3122,10 @@
                     events.push({...createdEvent, id: createdEvent.id, created: new Date(createdEvent.created_at), date: createdEvent.date.split('T')[0], description: createdEvent.description });
                     generateCalendar();
                     closeModal('eventModal');
-                    showNotification('Evento creado.', 'success');
+                    showNotification(getTranslation("notification.success.eventCreated"), 'success');
                 }
             } else {
-                showNotification('Por favor, completa al menos el título y la fecha del evento.', 'warning');
+                showNotification(getTranslation("notification.warning.eventFormError"), 'warning');
             }
         }
 
@@ -2799,8 +3163,8 @@
                 <div class="modal-content">
                     <p style="margin-bottom: 1.5rem; color: var(--text-primary);">${message}</p>
                     <div style="display: flex; justify-content: flex-end; gap: 1rem;">
-                        <button class="btn btn-secondary" id="customConfirmCancel">Cancelar</button>
-                        <button class="btn" id="customConfirmOk">Confirmar</button>
+                        <button class="btn btn-secondary" id="customConfirmCancel">${getTranslation("confirm.cancel") || "Cancelar"}</button>
+                        <button class="btn" id="customConfirmOk">${getTranslation("confirm.ok") || "Confirmar"}</button>
                     </div>
                 </div>`;
             document.body.appendChild(confirmModal);
@@ -2846,6 +3210,165 @@
             events = [ { id: 'sample-401', title: 'Reunión Inicial (Muestra)', date: new Date().toISOString().split('T')[0], time: '10:00', description: 'Discutir objetivos del proyecto. Evento de muestra.', created: new Date() }];
             if (notes.length > 0) currentNoteId = notes[0].id;
             console.log("Datos de muestra cargados como fallback.");
+        }
+
+        function cleanUrl(url) {
+            if (typeof url !== 'string') return url;
+            let cleaned = url.replace(/^(https?|ftp):[\/]{2,}/i, '$1://'); 
+            cleaned = cleaned.replace(/([^:])\/\/+/g, '$1/'); 
+            return cleaned;
+        }
+
+        function openFilePreviewModal(fileObject) {
+            const modal = document.getElementById('filePreviewModal');
+            const titleElement = document.getElementById('filePreviewTitle');
+            const imgElement = document.getElementById('filePreviewImage');
+            const videoElement = document.getElementById('filePreviewVideo');
+            const audioElement = document.getElementById('filePreviewAudio');
+            const iframeElement = document.getElementById('filePreviewIframe'); 
+            const textElement = document.getElementById('filePreviewText');
+            const fallbackElement = document.getElementById('filePreviewFallback');
+            const downloadLink = document.getElementById('fileDownloadLink');
+
+            [imgElement, videoElement, audioElement, iframeElement, textElement, fallbackElement].forEach(el => {
+                el.style.display = 'none';
+                if (el.tagName === 'IMG' || el.tagName === 'VIDEO' || el.tagName === 'AUDIO' || el.tagName === 'IFRAME') {
+                    el.removeAttribute('src'); 
+                }
+                if (el.tagName === 'PRE') {
+                    el.textContent = '';
+                }
+            });
+
+            titleElement.textContent = fileObject.file_name || getTranslation("modal.filePreview.title");
+            let previewSrc = null;
+            let canDownload = false;
+
+            if (fileObject.url && typeof fileObject.url === 'string') {
+                previewSrc = cleanUrl(fileObject.url);
+                downloadLink.href = previewSrc;
+                downloadLink.download = fileObject.file_name || 'archivo';
+                downloadLink.style.display = 'inline-block';
+                canDownload = true;
+                console.log("File Preview: Using Supabase URL (cleaned):", previewSrc);
+            } else if (fileObject.file && fileObject.file instanceof File) { 
+                previewSrc = URL.createObjectURL(fileObject.file);
+                downloadLink.href = previewSrc;
+                downloadLink.download = fileObject.file_name || 'archivo';
+                downloadLink.style.display = 'inline-block';
+                canDownload = true;
+                console.log("File Preview: Using local Object URL.");
+            } else {
+                fallbackElement.textContent = getTranslation("notification.error.noFileForPreview");
+                fallbackElement.style.display = 'block';
+                downloadLink.style.display = 'none';
+                openModal('filePreviewModal');
+                return;
+            }
+
+            const fileType = fileObject.type || '';
+            console.log(`File Preview: Attempting to preview ${fileObject.file_name}, Type: ${fileType}, Source: ${previewSrc}`);
+
+            let previewed = false;
+            if (previewSrc) {
+                if (fileType.startsWith('image/')) {
+                    imgElement.src = previewSrc;
+                    imgElement.style.display = 'block';
+                    previewed = true;
+                } else if (fileType.startsWith('video/')) {
+                    videoElement.src = previewSrc;
+                    videoElement.style.display = 'block';
+                    videoElement.load();
+                    previewed = true;
+                } else if (fileType.startsWith('audio/')) {
+                    audioElement.src = previewSrc;
+                    audioElement.style.display = 'block';
+                    audioElement.load();
+                    previewed = true;
+                } else if (fileType.includes('pdf')) { 
+                    const pdfjsViewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(previewSrc)}`;
+                    console.log("File Preview: PDF detected. Setting iframe source to PDF.js viewer:", pdfjsViewerUrl);
+                    iframeElement.src = pdfjsViewerUrl;
+                    iframeElement.style.display = 'block';
+                    previewed = true;
+                } else if (fileType.startsWith('text/') && fileObject.file && !fileObject.url) { 
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        textElement.textContent = e.target.result;
+                        textElement.style.display = 'block';
+                    }
+                    reader.onerror = function() {
+                        fallbackElement.textContent = getTranslation("notification.error.fileTextReadError");
+                        fallbackElement.style.display = 'block';
+                    }
+                    reader.readAsText(fileObject.file);
+                    previewed = true; 
+                }
+            }
+
+            if (!previewed) { 
+                 if (fileObject.url || (fileObject.file && fileObject.file instanceof File)) { 
+                    fallbackElement.textContent = `${getTranslation("notification.info.genericPreviewNotAvailable")} (${fileType || 'desconocido'}). ${getTranslation("modal.filePreview.downloadSuggestion") || "Puedes intentar descargarlo."}`;
+                } else { 
+                    fallbackElement.textContent = getTranslation("notification.error.noFileForPreview");
+                }
+                fallbackElement.style.display = 'block';
+            }
+            
+            if (!canDownload) { 
+                downloadLink.style.display = 'none';
+            }
+
+            openModal('filePreviewModal');
+        }
+
+        // --- Lógica de Notificación de Eventos ---
+        function checkUpcomingEvents() {
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+
+            events.forEach(event => {
+                if (event.date === todayStr && event.time && !notifiedEventIdsThisSession.has(event.id)) {
+                    const [hours, minutes] = event.time.split(':');
+                    const eventDateTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(hours), parseInt(minutes));
+                    
+                    const timeDifferenceMs = now.getTime() - eventDateTime.getTime();
+                    const fiveMinutesMs = 5 * 60 * 1000;
+                    
+                    if (timeDifferenceMs >= 0 && timeDifferenceMs < fiveMinutesMs) { 
+                        triggerEventNotification(event);
+                        notifiedEventIdsThisSession.add(event.id);
+                    } 
+                }
+            });
+        }
+
+        function triggerEventNotification(event) {
+            console.log("Disparando notificación para el evento:", event.title);
+            const titleElement = document.getElementById('eventNotificationTitle');
+            const timeElement = document.getElementById('eventNotificationTime');
+            const descriptionElement = document.getElementById('eventNotificationDescription');
+
+            if (titleElement) titleElement.textContent = `${getTranslation("modal.eventNotification.titlePrefix") || "🔔 ¡Recordatorio!"} ${event.title}`;
+            if (timeElement) timeElement.textContent = `${getTranslation("modal.event.date")}: ${event.date}, ${getTranslation("modal.event.time")}: ${event.time}`;
+            if (descriptionElement) descriptionElement.textContent = event.description || (getTranslation("modal.eventNotification.noDescription") || "Sin descripción adicional.");
+            
+            openModal('eventNotificationModal');
+            
+            try {
+                const notificationSound = new Audio('https://cdn.jsdelivr.net/npm/ion-sound@3.0.7/sounds/water_droplet.mp3'); 
+                notificationSound.play().catch(e => console.warn("No se pudo reproducir sonido de notificación:", e));
+            } catch (e) {
+                console.warn("Error al intentar reproducir sonido:", e);
+            }
+        }
+
+        function startEventNotificationChecks() {
+            if (checkUpcomingEventsInterval) {
+                clearInterval(checkUpcomingEventsInterval);
+            }
+            checkUpcomingEventsInterval = setInterval(checkUpcomingEvents, 60000); 
+            checkUpcomingEvents(); 
         }
 
 
